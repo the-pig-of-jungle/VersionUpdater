@@ -2,8 +2,14 @@ package com.coder.zzq.versionupdaterlib;
 
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
+import android.util.Log;
+
+import com.coder.zzq.smartshow.toast.SmartToast;
 
 /**
  * Created by 朱志强 on 2018/1/23.
@@ -51,8 +57,43 @@ public class VersionUpdater{
 
         if (needUpdate()){
             DownloadManager downloadManager = (DownloadManager) mAppContext.getSystemService(Context.DOWNLOAD_SERVICE);
+            Uri uri = Uri.parse(mRemoteApkUrl);
+            SmartToast.show(uri.getLastPathSegment());
             DownloadManager.Request request = new DownloadManager.Request(Uri.parse(mRemoteApkUrl));
-            downloadManager.enqueue(request);
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"test.apk");
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+            request.setTitle("abc");
+            request.setDescription("efg");
+
+            long downloadId = downloadManager.enqueue(request);
+
+            for (;;){
+
+                DownloadManager.Query query = new DownloadManager.Query();
+                query.setFilterById(downloadId);
+                Cursor cursor = downloadManager.query(query);
+
+                if (cursor.moveToFirst()){
+                    switch (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))){
+                        case DownloadManager.STATUS_PENDING:
+                            Log.d("main","pending");
+                            break;
+                        case DownloadManager.STATUS_RUNNING:
+
+                            Log.d("main","running");
+                            break;
+                        case DownloadManager.STATUS_PAUSED:
+                            Log.d("main","paused");
+                            break;
+                        case DownloadManager.STATUS_SUCCESSFUL:
+                            Log.d("main","succ");
+                            break;
+                    }
+                }
+
+                cursor.close();
+            }
+
         }
 
     }

@@ -28,4 +28,8 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
+    compile('com.github.the-pig-of-jungle:SmartShow:v1.0.3') {
+
+        exclude group: 'com.android.support'
+    }
 }
