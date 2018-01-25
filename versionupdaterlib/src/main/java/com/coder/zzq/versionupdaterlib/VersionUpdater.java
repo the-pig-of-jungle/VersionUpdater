@@ -7,9 +7,16 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
 import com.coder.zzq.smartshow.toast.SmartToast;
+
+import java.io.File;
+import java.io.FileDescriptor;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Logger;
 
 /**
  * Created by 朱志强 on 2018/1/23.
@@ -63,11 +70,13 @@ public class VersionUpdater{
             request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"test.apk");
             request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
             request.setTitle("abc");
-            request.setDescription("efg");
 
             long downloadId = downloadManager.enqueue(request);
 
-            for (;;){
+            Log.d("main",downloadId + "");
+
+
+
 
                 DownloadManager.Query query = new DownloadManager.Query();
                 query.setFilterById(downloadId);
@@ -92,9 +101,14 @@ public class VersionUpdater{
                 }
 
                 cursor.close();
+
+
+
             }
 
-        }
+
+
+
 
     }
 
