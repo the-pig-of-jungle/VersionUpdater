@@ -14,6 +14,7 @@ import com.coder.zzq.smartshow.toast.SmartToast;
 
 import java.io.File;
 import java.io.FileDescriptor;
+import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Logger;
@@ -22,118 +23,71 @@ import java.util.logging.Logger;
  * Created by 朱志强 on 2018/1/23.
  */
 
-public class VersionUpdater{
+public class VersionUpdater {
 
     private Context mAppContext;
-
     private int mRemoteVersionCode;
     private String mRemoteApkUrl;
+    private String mSavedApkName;
 
-    private boolean mRemoteVersionCodeHasSet;
 
-    private boolean mRemoteApkUrlHasSet;
-
-    private VersionUpdater(Context context){
+    private VersionUpdater(Context context) {
         mAppContext = context.getApplicationContext();
     }
 
 
-    public static VersionUpdater get(Context context){
+    public static VersionUpdater get(Context context) {
         return new VersionUpdater(context);
     }
 
-    public VersionUpdater remoteVersionCode(int remoteVersion){
-        mRemoteVersionCode = remoteVersion;
-        mRemoteVersionCodeHasSet = true;
-        return this;
-    }
 
-    public VersionUpdater remoteApkUrl(String remoteApkUrl){
-        mRemoteApkUrl = remoteApkUrl;
-        mRemoteApkUrlHasSet = true;
+    public VersionUpdater remoteVersionCode(int versionCode) {
+        mRemoteVersionCode = versionCode;
         return this;
     }
 
 
+    public VersionUpdater remoteApkUrl(String apkUrl) {
+        mRemoteApkUrl = apkUrl;
+        return this;
+    }
 
-    public void detect(){
+    public VersionUpdater savedApkName(String savedApkName) {
+        mSavedApkName = savedApkName;
+        return this;
+    }
 
-        if (!mRemoteVersionCodeHasSet || !mRemoteApkUrlHasSet){
-            new IllegalStateException("必须同时设置远程app的版本号和下载地址！");
-        }
 
-        if (needUpdate()){
+    public void check() {
+        if (needUpdate()) {
             DownloadManager downloadManager = (DownloadManager) mAppContext.getSystemService(Context.DOWNLOAD_SERVICE);
             Uri uri = Uri.parse(mRemoteApkUrl);
-            SmartToast.show(uri.getLastPathSegment());
-            DownloadManager.Request request = new DownloadManager.Request(Uri.parse(mRemoteApkUrl));
-            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,"test.apk");
-            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
-            request.setTitle("abc");
-
-            long downloadId = downloadManager.enqueue(request);
-
-            Log.d("main",downloadId + "");
-
-
-
-
-                DownloadManager.Query query = new DownloadManager.Query();
-                query.setFilterById(downloadId);
-                Cursor cursor = downloadManager.query(query);
-
-                if (cursor.moveToFirst()){
-                    switch (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))){
-                        case DownloadManager.STATUS_PENDING:
-                            Log.d("main","pending");
-                            break;
-                        case DownloadManager.STATUS_RUNNING:
-
-                            Log.d("main","running");
-                            break;
-                        case DownloadManager.STATUS_PAUSED:
-                            Log.d("main","paused");
-                            break;
-                        case DownloadManager.STATUS_SUCCESSFUL:
-                            Log.d("main","succ");
-                            break;
-                    }
-                }
-
-                cursor.close();
-
-
-
-            }
-
-
-
-
-
+            DownloadManager.Request request = new DownloadManager.Request(uri);
+            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, mSavedApkName)
+                    .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                    .setTitle("abc");
+           long downloadId = downloadManager.enqueue(request);
+        }
     }
 
 
-
-
-    private boolean needUpdate(){
+    private boolean needUpdate() {
         int localVersion = localVersionCode();
         return mRemoteVersionCode > localVersion;
     }
 
 
-
-    private int localVersionCode(){
+    private int localVersionCode() {
         int versionCode = 1;
 
         try {
-            versionCode = mAppContext.getPackageManager().getPackageInfo(mAppContext.getPackageName(),0).versionCode;
+            versionCode = mAppContext.getPackageManager().getPackageInfo(mAppContext.getPackageName(), 0).versionCode;
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
 
         return versionCode;
     }
-
 
 
 }

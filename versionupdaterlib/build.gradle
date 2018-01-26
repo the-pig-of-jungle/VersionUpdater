@@ -12,6 +12,8 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        buildConfigField 'String', 'FILE_PROVIDER_AUTHORITIES', '"com.coder.zzq.versionupdaterlib.file_provider"'
+
     }
     buildTypes {
         release {
