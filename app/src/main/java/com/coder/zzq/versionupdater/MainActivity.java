@@ -2,17 +2,14 @@ package com.coder.zzq.versionupdater;
 
 import android.Manifest;
 import android.app.DownloadManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -20,11 +17,7 @@ import android.widget.EditText;
 import com.coder.zzq.smartshow.toast.SmartToast;
 import com.coder.zzq.versionupdaterlib.VersionUpdater;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -40,13 +33,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         SmartToast.plainToast(this);
         mPermission = new String[]{
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
         };
         mEditText = (EditText) findViewById(R.id.edt_id);
     }
 
     public void onDetectClick(View view) {
-        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
+        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED){
             ActivityCompat.requestPermissions(this,mPermission,1);
         }else {
             VersionUpdater.get(this)
