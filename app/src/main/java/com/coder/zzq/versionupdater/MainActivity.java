@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             VersionUpdater.get(this)
                     .remoteVersionCode(2)
                     .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180124/ps_version_2.6.6.apk")
-                    .detect();
+                    ;
         }
 
     }
@@ -54,10 +54,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        VersionUpdater.get(this)
-                .remoteVersionCode(2)
-                .remoteApkUrl("http://mu.liinji.com/AppFolders/20180122/ps_version_1.3.6.apk")
-                .detect();
+
     }
 
     public void onGetClick(View view) {

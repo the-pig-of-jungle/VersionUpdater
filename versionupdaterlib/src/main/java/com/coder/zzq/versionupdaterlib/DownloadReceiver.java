@@ -4,23 +4,13 @@ import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
 
 import com.coder.zzq.smartshow.toast.SmartToast;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-import static android.support.v4.content.FileProvider.getUriForFile;
-import static com.coder.zzq.versionupdaterlib.Utils.getInfoOfDownloadFile;
 
 
 /**
