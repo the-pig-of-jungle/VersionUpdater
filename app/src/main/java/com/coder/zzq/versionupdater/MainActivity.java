@@ -15,12 +15,19 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.coder.zzq.smartshow.toast.SmartToast;
+import com.coder.zzq.versionupdaterlib.DownloadEvent;
+import com.coder.zzq.versionupdaterlib.DownloadEventProcessor;
+import com.coder.zzq.versionupdaterlib.MessageSender;
 import com.coder.zzq.versionupdaterlib.VersionUpdater;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.File;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private String[] mPermission;
 
@@ -45,8 +52,9 @@ public class MainActivity extends AppCompatActivity {
         }else {
             VersionUpdater.get(this)
                     .remoteVersionCode(2)
-                    .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180124/ps_version_2.6.6.apk")
-                    ;
+                    .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180127/ps_version_2.7.1.apk")
+                    .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                    .check();
         }
 
     }
@@ -58,30 +66,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onGetClick(View view) {
-        DownloadManager downloadManager = (DownloadManager) getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
-        DownloadManager.Query query = new DownloadManager.Query();
-        query.setFilterById(Long.parseLong(mEditText.getText().toString().trim()));
-        Cursor cursor = downloadManager.query(query);
-        String uriStr = "";
-        if (cursor.moveToFirst()){
-            Log.d("fuck","任务存在" );
-            uriStr = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
-
-        }
-
-        cursor.close();
-
-
-
-        Log.d("fuck","uri----->" + uriStr);
-
-
-
-        Log.d("fuck",Uri.parse(uriStr).getEncodedPath());
-
-        File file = new File(Uri.parse(uriStr).getEncodedPath());
-
-        Log.d("fuck",file.exists() + "");
 
     }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN,sticky = true)
+    public void onReceiveDownloadEvent(DownloadEvent event) {
+        switch (event.getEvent()){
+            case DownloadEvent.HAS_NEW_VERSION:
+                SmartToast.showAtTop("有新版本！");
+                event.startDownload();
+                break;
+            case DownloadEvent.DOWNLOAD_COMPLETE:
+
+                event.installApk(this);
+                break;
+        }
+    }
+
 }

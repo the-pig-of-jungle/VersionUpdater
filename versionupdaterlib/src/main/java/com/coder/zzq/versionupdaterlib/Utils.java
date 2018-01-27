@@ -50,12 +50,22 @@ public class Utils {
     }
 
 
-    public static void installApk(Context context,Uri uri){
+    public static void installApk(Context context, Uri uri) {
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW)
-                .setDataAndType(uri,"application/vnd.android.package-archive")
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                .setDataAndType(uri, "application/vnd.android.package-archive")
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
         context.startActivity(intent);
+    }
+
+
+    public static String checkNullOrEmpty(String str) {
+
+        if (str == null || str.trim().length() == 0) {
+            throw new IllegalArgumentException("参数字符串不可为null或者空白！");
+        }
+
+        return str;
     }
 
 }

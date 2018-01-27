@@ -32,7 +32,8 @@ public class DownloadReceiver extends BroadcastReceiver {
                         uri = FileProvider.getUriForFile(context,BuildConfig.FILE_PROVIDER_AUTHORITIES,new File(info.getUri().getEncodedPath()));
                     }
 
-                    Utils.installApk(context,uri);
+                    MessageSender.sendMsg(new DownloadEvent(DownloadEvent.DOWNLOAD_COMPLETE,uri));
+
                 }
 
                 break;
