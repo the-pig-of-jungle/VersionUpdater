@@ -49,6 +49,7 @@ public class DownloadFileInfo implements Parcelable {
         dest.writeParcelable(mUri, flags);
         dest.writeInt(mFileSizeBytes);
         dest.writeInt(mDownloadStatus);
+
     }
 
 
