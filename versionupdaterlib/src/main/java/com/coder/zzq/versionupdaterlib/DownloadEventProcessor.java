@@ -1,7 +1,6 @@
 package com.coder.zzq.versionupdaterlib;
 
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
 
 /**
  * Created by pig on 2018/1/27.

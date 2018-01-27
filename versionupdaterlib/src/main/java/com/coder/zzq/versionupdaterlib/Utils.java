@@ -4,13 +4,17 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
+import com.coder.zzq.versionupdaterlib.bean.DownloadFileInfo;
+import com.coder.zzq.versionupdaterlib.bean.OldDownloadInfo;
+
+import java.io.File;
 
 /**
  * Created by pig on 2018/1/24.
@@ -18,9 +22,13 @@ import java.io.BufferedOutputStream;
 
 public class Utils {
 
+    public static DownloadManager getDownloadManager(Context context) {
+        return (DownloadManager) context.getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
+    }
+
     public static DownloadFileInfo getInfoOfDownloadFile(Context context, long downloadId) {
 
-        DownloadManager downloadManager = (DownloadManager) context.getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
+        DownloadManager downloadManager = getDownloadManager(context);
 
         DownloadFileInfo downloadFileInfo = new DownloadFileInfo();
         DownloadManager.Query query = new DownloadManager.Query();
@@ -38,6 +46,10 @@ public class Utils {
 
                 downloadFileInfo.setFileSizeBytes(sizeBytes);
 
+                int reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
+
+                downloadFileInfo.setReason(reason);
+
             }
         } finally {
             if (cursor != null) {
@@ -51,6 +63,9 @@ public class Utils {
 
 
     public static void installApk(Context context, Uri uri) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            uri = FileProvider.getUriForFile(context, BuildConfig.FILE_PROVIDER_AUTHORITIES, new File(uri.getEncodedPath()));
+        }
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW)
                 .setDataAndType(uri, "application/vnd.android.package-archive")
@@ -66,6 +81,42 @@ public class Utils {
         }
 
         return str;
+    }
+
+
+    public static final String REMOTE_VERSION_INFO_PREF = "remote_version_info";
+    public static final String VERSION_INFO = "version_info";
+
+
+    private static SharedPreferences remoteVersionInfoPref(Context context) {
+        return context.getSharedPreferences(REMOTE_VERSION_INFO_PREF, Context.MODE_PRIVATE);
+    }
+
+    public static void storeOldDownloadInfo(Context context, long downloadId, int versionCode) {
+        OldDownloadInfo versionInfo = new OldDownloadInfo(downloadId, versionCode);
+        remoteVersionInfoPref(context).edit().putString(VERSION_INFO, versionInfo.toString()).commit();
+    }
+
+    public static OldDownloadInfo fetchOldDownloadInfo(Context context) {
+        String jsonStr = remoteVersionInfoPref(context).getString(VERSION_INFO, null);
+        return jsonStr == null ? null : new OldDownloadInfo(jsonStr);
+    }
+
+    public static void clearStoredOldDownloadInfo(Context context) {
+        remoteVersionInfoPref(context).edit().putString(VERSION_INFO, null).commit();
+    }
+
+
+    public static int localVersionCode(Context context) {
+        int versionCode = 1;
+
+        try {
+            versionCode = context.getPackageManager().getPackageInfo(context.getPackageName(), 0).versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return versionCode;
     }
 
 }

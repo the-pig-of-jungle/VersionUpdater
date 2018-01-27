@@ -1,8 +1,8 @@
 package com.coder.zzq.versionupdaterlib;
 
-import org.greenrobot.eventbus.EventBus;
+import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
 
-import java.security.MessageDigest;
+import org.greenrobot.eventbus.EventBus;
 
 /**
  * Created by pig on 2018/1/27.
