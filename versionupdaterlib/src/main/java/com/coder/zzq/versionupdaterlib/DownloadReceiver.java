@@ -23,16 +23,16 @@ public class DownloadReceiver extends BroadcastReceiver {
         SmartToast.plainToast(context);
         switch (intent.getAction()) {
             case DownloadManager.ACTION_DOWNLOAD_COMPLETE:
-                SmartToast.show("下载完成！");
+
                 long downloadId = intent.getExtras().getLong(DownloadManager.EXTRA_DOWNLOAD_ID);
                 DownloadFileInfo info = Utils.getInfoOfDownloadFile(context, downloadId);
                 if (info.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL && info.getUri() != null) {
                     Uri uri = info.getUri();
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-                        uri = FileProvider.getUriForFile(context,BuildConfig.FILE_PROVIDER_AUTHORITIES,new File(info.getUri().getEncodedPath()));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        uri = FileProvider.getUriForFile(context, BuildConfig.FILE_PROVIDER_AUTHORITIES, new File(info.getUri().getEncodedPath()));
                     }
 
-                    MessageSender.sendMsg(new DownloadEvent(DownloadEvent.DOWNLOAD_COMPLETE,uri));
+                    MessageSender.sendMsg(new DownloadEvent(DownloadEvent.DOWNLOAD_COMPLETE, uri));
 
                 }
 

@@ -27,7 +27,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements DownloadEventProcessor{
 
     private String[] mPermission;
 
@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity{
 
 
     @Subscribe(threadMode = ThreadMode.MAIN,sticky = true)
+    @Override
     public void onReceiveDownloadEvent(DownloadEvent event) {
         switch (event.getEvent()){
             case DownloadEvent.HAS_NEW_VERSION:
@@ -82,6 +83,9 @@ public class MainActivity extends AppCompatActivity{
                 event.installApk(this);
                 break;
         }
+
+        MessageSender.removeDownloadEvent(event);
+
     }
 
 }

@@ -8,6 +8,5 @@ import org.greenrobot.eventbus.ThreadMode;
  */
 
 public interface DownloadEventProcessor {
-    @Subscribe(threadMode = ThreadMode.MAIN,sticky = true)
     void onReceiveDownloadEvent(DownloadEvent event);
 }

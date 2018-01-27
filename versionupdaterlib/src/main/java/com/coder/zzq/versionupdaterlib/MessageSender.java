@@ -37,6 +37,10 @@ public class MessageSender {
     }
 
 
+    public static void removeDownloadEvent(DownloadEvent event){
+        getEventBus().removeStickyEvent(event);
+    }
+
 
 
 
