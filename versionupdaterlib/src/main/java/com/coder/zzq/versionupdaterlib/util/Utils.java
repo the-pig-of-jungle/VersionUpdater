@@ -1,4 +1,4 @@
-package com.coder.zzq.versionupdaterlib;
+package com.coder.zzq.versionupdaterlib.util;
 
 import android.app.DownloadManager;
 import android.content.Context;
@@ -11,6 +11,7 @@ import android.os.Build;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
+import com.coder.zzq.versionupdaterlib.BuildConfig;
 import com.coder.zzq.versionupdaterlib.bean.DownloadFileInfo;
 import com.coder.zzq.versionupdaterlib.bean.OldDownloadInfo;
 
@@ -92,9 +93,8 @@ public class Utils {
         return context.getSharedPreferences(REMOTE_VERSION_INFO_PREF, Context.MODE_PRIVATE);
     }
 
-    public static void storeOldDownloadInfo(Context context, long downloadId, int versionCode) {
-        OldDownloadInfo versionInfo = new OldDownloadInfo(downloadId, versionCode);
-        remoteVersionInfoPref(context).edit().putString(VERSION_INFO, versionInfo.toString()).commit();
+    public static void storeOldDownloadInfo(Context context, OldDownloadInfo oldDownloadInfo) {
+        remoteVersionInfoPref(context).edit().putString(VERSION_INFO, oldDownloadInfo.toString()).commit();
     }
 
     public static OldDownloadInfo fetchOldDownloadInfo(Context context) {

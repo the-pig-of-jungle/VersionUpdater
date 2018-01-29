@@ -9,8 +9,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
+import com.coder.zzq.versionupdaterlib.util.Utils;
 
-import static com.coder.zzq.versionupdaterlib.Utils.checkNullOrEmpty;
+import static com.coder.zzq.versionupdaterlib.util.Utils.checkNullOrEmpty;
+
 
 /**
  * Created by 朱志强 on 2018/1/23.
@@ -48,6 +50,7 @@ public class VersionUpdater {
         private int mRemoteVersionCode;
         private int mLocalVersionCode;
         private Uri mRemoteApkUri;
+        private boolean mIsForceUpdate;
         private int mNotificationVisibilityMode;
         private String mNotificationTitle;
         private boolean mNeedNotifiedProgress;
@@ -63,6 +66,7 @@ public class VersionUpdater {
             mRemoteVersionCode = in.readInt();
             mLocalVersionCode = in.readInt();
             mRemoteApkUri = in.readParcelable(Uri.class.getClassLoader());
+            mIsForceUpdate = in.readByte() != 0;
             mNotificationVisibilityMode = in.readInt();
             mNotificationTitle = in.readString();
             mNeedNotifiedProgress = in.readByte() != 0;
@@ -80,7 +84,12 @@ public class VersionUpdater {
 
 
         public UpdaterSetting remoteApkUrl(String apkUrl) {
-            mRemoteApkUri = Uri.parse(Utils.checkNullOrEmpty(apkUrl));
+            mRemoteApkUri = Uri.parse(checkNullOrEmpty(apkUrl));
+            return this;
+        }
+
+        public UpdaterSetting forceUpdate(boolean isForceUpdate) {
+            mIsForceUpdate = isForceUpdate;
             return this;
         }
 
@@ -134,6 +143,10 @@ public class VersionUpdater {
             return mRemoteApkUri;
         }
 
+        public boolean isForceUpdate() {
+            return mIsForceUpdate;
+        }
+
         public int getNotificationVisibilityMode() {
             return mNotificationVisibilityMode;
         }
@@ -173,9 +186,9 @@ public class VersionUpdater {
             settingCheck();
 
             if (needUpdate()) {
-                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.HAS_NEW_VERSION, this));
+                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD, this));
             } else {
-                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.VERSION_UP_TO_DATE));
+                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE));
             }
         }
 
@@ -245,6 +258,7 @@ public class VersionUpdater {
             dest.writeInt(mRemoteVersionCode);
             dest.writeInt(mLocalVersionCode);
             dest.writeParcelable(mRemoteApkUri, flags);
+            dest.writeByte((byte) (mIsForceUpdate ? 1 : 0));
             dest.writeInt(mNotificationVisibilityMode);
             dest.writeString(mNotificationTitle);
             dest.writeByte((byte) (mNeedNotifiedProgress ? 1 : 0));

@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements DownloadEventProc
                 .remoteVersionCode(2)
                 .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180127/ps_version_2.7.1.apk")
                 .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                .notificationTitle("PP积配送员")
+                .savedApkName("test.apk")
                 .check();
     }
 
@@ -73,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements DownloadEventProc
     @Override
     public void onReceiveDownloadEvent(final DownloadEvent event) {
         switch (event.getEvent()) {
-            case DownloadEvent.HAS_NEW_VERSION:
+            case DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD:
                 AlertDialog alertDialog = new AlertDialog.Builder(this)
                         .setTitle("发现新版本v1.0.1")
                         .setMessage("**********")
@@ -110,6 +112,9 @@ public class MainActivity extends AppCompatActivity implements DownloadEventProc
                         })
                         .create()
                         .show();
+                break;
+            case DownloadEvent.APK_HAS_EXTSTS:
+                event.installApk(this);
                 break;
         }
 

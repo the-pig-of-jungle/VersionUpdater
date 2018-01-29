@@ -7,9 +7,9 @@ import android.content.Intent;
 
 import com.coder.zzq.smartshow.toast.SmartToast;
 import com.coder.zzq.versionupdaterlib.MessageSender;
-import com.coder.zzq.versionupdaterlib.Utils;
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
 import com.coder.zzq.versionupdaterlib.bean.DownloadFileInfo;
+import com.coder.zzq.versionupdaterlib.util.Utils;
 
 /**
  * Created by 朱志强 on 2018/1/24.

@@ -3,7 +3,7 @@ package com.coder.zzq.versionupdaterlib.bean;
 import android.content.Context;
 import android.net.Uri;
 
-import com.coder.zzq.versionupdaterlib.Utils;
+import com.coder.zzq.versionupdaterlib.util.Utils;
 import com.coder.zzq.versionupdaterlib.VersionUpdater;
 import com.coder.zzq.versionupdaterlib.service.DownloadService;
 
@@ -13,12 +13,13 @@ import com.coder.zzq.versionupdaterlib.service.DownloadService;
 
 public class DownloadEvent {
 
-    public static final int HAS_NEW_VERSION = 1;
-    public static final int VERSION_UP_TO_DATE = 2;
+    public static final int BEFORE_NEW_VERSION_DOWNLOAD = 1;
+    public static final int LOCAL_VERSION_UP_TO_DATE = 2;
     public static final int DOWNLOAD_IN_PROGRESS = 3;
     public static final int DOWNLOAD_PAUSED = 4;
     public static final int DOWNLOAD_FAILED = 5;
     public static final int DOWNLOAD_COMPLETE = 6;
+    public static final int APK_HAS_EXTSTS = 7;
 
     private int mEvent;
 
@@ -63,6 +64,10 @@ public class DownloadEvent {
         mEvent = event;
     }
 
+
+    public void suppressUpdate(){
+        
+    }
 
     public void startDownload(Context context) {
         if (context != null && mUpdaterSetting != null) {

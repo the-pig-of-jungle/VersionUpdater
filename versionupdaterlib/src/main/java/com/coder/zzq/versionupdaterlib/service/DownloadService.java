@@ -8,7 +8,7 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 
 import com.coder.zzq.versionupdaterlib.MessageSender;
-import com.coder.zzq.versionupdaterlib.Utils;
+import com.coder.zzq.versionupdaterlib.util.Utils;
 import com.coder.zzq.versionupdaterlib.VersionUpdater;
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
 import com.coder.zzq.versionupdaterlib.bean.DownloadFileInfo;
@@ -65,8 +65,7 @@ public class DownloadService extends IntentService {
                 case DownloadManager.STATUS_SUCCESSFUL:
                     File file = new File(downloadFileInfo.getUri().getEncodedPath());
                     if (file.exists() && file.length() == downloadFileInfo.getFileSizeBytes()) {
-
-                        Utils.installApk(this, downloadFileInfo.getUri());
+                        MessageSender.sendMsg(new DownloadEvent(DownloadEvent.APK_HAS_EXTSTS, downloadFileInfo.getUri()));
                     } else {
                         clearAndDownloadAgain(updaterSetting, oldDownloadInfo);
                     }
@@ -85,6 +84,9 @@ public class DownloadService extends IntentService {
 
         if (oldDownloadInfo != null) {
             Utils.getDownloadManager(this).remove(oldDownloadInfo.getDownloadId());
+            oldDownloadInfo.reset();
+        } else {
+            oldDownloadInfo = new OldDownloadInfo();
         }
 
 
@@ -97,7 +99,11 @@ public class DownloadService extends IntentService {
                 .setTitle(updaterSetting.getNotificationTitle());
         long downloadId = Utils.getDownloadManager(this).enqueue(request);
 
-        Utils.storeOldDownloadInfo(this, downloadId, updaterSetting.getRemoteVersionCode());
+        oldDownloadInfo.setDownloadId(downloadId);
+        oldDownloadInfo.setVersionCode(updaterSetting.getRemoteVersionCode());
+        oldDownloadInfo.setForceUpdate(updaterSetting.isForceUpdate());
+
+        Utils.storeOldDownloadInfo(this, oldDownloadInfo);
     }
 
 
