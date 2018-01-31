@@ -8,11 +8,11 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 
 import com.coder.zzq.versionupdaterlib.MessageSender;
-import com.coder.zzq.versionupdaterlib.util.Utils;
-import com.coder.zzq.versionupdaterlib.VersionUpdater;
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
 import com.coder.zzq.versionupdaterlib.bean.DownloadFileInfo;
 import com.coder.zzq.versionupdaterlib.bean.OldDownloadInfo;
+import com.coder.zzq.versionupdaterlib.bean.UpdaterSetting;
+import com.coder.zzq.versionupdaterlib.util.Utils;
 
 import java.io.File;
 
@@ -31,7 +31,7 @@ public class DownloadService extends IntentService {
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
 
-        VersionUpdater.UpdaterSetting updaterSetting = intent.getParcelableExtra(UPDATER_SETTING);
+        UpdaterSetting updaterSetting = intent.getParcelableExtra(UPDATER_SETTING);
 
         OldDownloadInfo oldDownloadInfo = Utils.fetchOldDownloadInfo(this);
 
@@ -65,7 +65,7 @@ public class DownloadService extends IntentService {
                 case DownloadManager.STATUS_SUCCESSFUL:
                     File file = new File(downloadFileInfo.getUri().getEncodedPath());
                     if (file.exists() && file.length() == downloadFileInfo.getFileSizeBytes()) {
-                        MessageSender.sendMsg(new DownloadEvent(DownloadEvent.APK_HAS_EXTSTS, downloadFileInfo.getUri()));
+                        MessageSender.sendMsg(new DownloadEvent(DownloadEvent.APK_HAS_EXISTS, downloadFileInfo.getUri()));
                     } else {
                         clearAndDownloadAgain(updaterSetting, oldDownloadInfo);
                     }
@@ -80,7 +80,7 @@ public class DownloadService extends IntentService {
         }
     }
 
-    private void clearAndDownloadAgain(VersionUpdater.UpdaterSetting updaterSetting, OldDownloadInfo oldDownloadInfo) {
+    private void clearAndDownloadAgain(UpdaterSetting updaterSetting, OldDownloadInfo oldDownloadInfo) {
 
         if (oldDownloadInfo != null) {
             Utils.getDownloadManager(this).remove(oldDownloadInfo.getDownloadId());
@@ -107,7 +107,7 @@ public class DownloadService extends IntentService {
     }
 
 
-    public static void start(Context context, VersionUpdater.UpdaterSetting updaterSetting) {
+    public static void start(Context context, UpdaterSetting updaterSetting) {
         Intent intent = new Intent(context, DownloadService.class);
         intent.putExtra(UPDATER_SETTING, updaterSetting);
         context.startService(intent);

@@ -46,10 +46,11 @@ public class MainActivity extends AppCompatActivity implements DownloadEventProc
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, mPermission, 1);
         } else {
-            VersionUpdater.get(this)
+            VersionUpdater.builder(this)
                     .remoteVersionCode(2)
                     .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180127/ps_version_2.7.1.apk")
                     .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                    .build()
                     .check();
         }
 
@@ -58,12 +59,13 @@ public class MainActivity extends AppCompatActivity implements DownloadEventProc
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        VersionUpdater.get(this)
+        VersionUpdater.builder(this)
                 .remoteVersionCode(2)
                 .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180127/ps_version_2.7.1.apk")
                 .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .notificationTitle("PP积配送员")
                 .savedApkName("test.apk")
+                .build()
                 .check();
     }
 
@@ -113,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements DownloadEventProc
                         .create()
                         .show();
                 break;
-            case DownloadEvent.APK_HAS_EXTSTS:
+            case DownloadEvent.APK_HAS_EXISTS:
                 event.installApk(this);
                 break;
         }

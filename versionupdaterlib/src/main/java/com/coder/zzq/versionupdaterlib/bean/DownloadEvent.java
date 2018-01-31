@@ -3,9 +3,8 @@ package com.coder.zzq.versionupdaterlib.bean;
 import android.content.Context;
 import android.net.Uri;
 
-import com.coder.zzq.versionupdaterlib.util.Utils;
-import com.coder.zzq.versionupdaterlib.VersionUpdater;
 import com.coder.zzq.versionupdaterlib.service.DownloadService;
+import com.coder.zzq.versionupdaterlib.util.Utils;
 
 /**
  * Created by pig on 2018/1/27.
@@ -19,11 +18,11 @@ public class DownloadEvent {
     public static final int DOWNLOAD_PAUSED = 4;
     public static final int DOWNLOAD_FAILED = 5;
     public static final int DOWNLOAD_COMPLETE = 6;
-    public static final int APK_HAS_EXTSTS = 7;
+    public static final int APK_HAS_EXISTS = 7;
 
     private int mEvent;
 
-    private VersionUpdater.UpdaterSetting mUpdaterSetting;
+    private UpdaterSetting mUpdaterSetting;
     private Uri mLocalApkFileUri;
     private int mDownloadPausedReason;
     private int mDownloadFailedReason;
@@ -34,7 +33,7 @@ public class DownloadEvent {
         mEvent = event;
     }
 
-    public DownloadEvent(int event, VersionUpdater.UpdaterSetting updaterSetting) {
+    public DownloadEvent(int event, UpdaterSetting updaterSetting) {
         this(event);
         mUpdaterSetting = updaterSetting;
     }
@@ -65,8 +64,12 @@ public class DownloadEvent {
     }
 
 
-    public void suppressUpdate(){
-        
+    public void suppressUpdate() {
+        if (mUpdaterSetting != null && !mUpdaterSetting.isForceUpdate()) {
+            switch (mUpdaterSetting.getDetectMode()) {
+
+            }
+        }
     }
 
     public void startDownload(Context context) {

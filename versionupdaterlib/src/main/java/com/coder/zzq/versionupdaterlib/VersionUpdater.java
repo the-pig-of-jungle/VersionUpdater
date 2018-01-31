@@ -1,270 +1,147 @@
 package com.coder.zzq.versionupdaterlib;
 
 import android.app.Activity;
-import android.app.Application;
 import android.app.DownloadManager;
 import android.net.Uri;
-import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
+import com.coder.zzq.versionupdaterlib.bean.UpdaterSetting;
+import com.coder.zzq.versionupdaterlib.listener.ActivityCallback;
 import com.coder.zzq.versionupdaterlib.util.Utils;
 
-import static com.coder.zzq.versionupdaterlib.util.Utils.checkNullOrEmpty;
+import static com.coder.zzq.versionupdaterlib.bean.UpdaterSetting.DETECT_MODE_AUTO;
+import static com.coder.zzq.versionupdaterlib.bean.UpdaterSetting.DETECT_MODE_MANUAL;
 
 
 /**
- * Created by 朱志强 on 2018/1/23.
+ * Created by 喜欢、陪你看风景 on 2018/1/31.
  */
 
-public class VersionUpdater {
+public class VersionUpdater implements UpdaterBuilder, IVersionUpdater{
 
     private static boolean sHasInitMsgSender;
 
-    public static UpdaterSetting get(Activity activity) {
-        if (activity == null) {
-            throw new IllegalArgumentException("参数activity不可为null！");
-        }
-        UpdaterSetting updaterSetting = new UpdaterSetting(activity);
-        initMessageSenderIfNotExists(activity, updaterSetting);
-        return updaterSetting;
+    private UpdaterSetting mUpdaterSetting;
+
+
+    private VersionUpdater(Activity activity) {
+        initMessageSenderIfNotExists(activity);
+        mUpdaterSetting = new UpdaterSetting();
+        mUpdaterSetting.setLocalVersionCode(Utils.localVersionCode(activity));
+        mUpdaterSetting.setNotificationVisibilityMode(DownloadManager.Request.VISIBILITY_VISIBLE);
     }
 
 
-    private static void initMessageSenderIfNotExists(Activity activity, UpdaterSetting updaterSetting) {
+    private void initMessageSenderIfNotExists(Activity activity) {
 
         if (!sHasInitMsgSender) {
             if (!MessageSender.isRegister(activity)) {
                 MessageSender.register(activity);
             }
-            activity.getApplication().registerActivityLifecycleCallbacks(updaterSetting);
+            activity.getApplication().registerActivityLifecycleCallbacks(new ActivityCallback());
             sHasInitMsgSender = true;
         }
 
     }
 
 
-    public static class UpdaterSetting implements Application.ActivityLifecycleCallbacks, Parcelable {
-
-        private int mRemoteVersionCode;
-        private int mLocalVersionCode;
-        private Uri mRemoteApkUri;
-        private boolean mIsForceUpdate;
-        private int mNotificationVisibilityMode;
-        private String mNotificationTitle;
-        private boolean mNeedNotifiedProgress;
-        private String mSavedApkName;
-
-        public UpdaterSetting(Activity activity) {
-            mLocalVersionCode = Utils.localVersionCode(activity);
-            mNotificationVisibilityMode = DownloadManager.Request.VISIBILITY_VISIBLE;
+    public static UpdaterBuilder builder(Activity activity) {
+        if (activity == null) {
+            throw new IllegalArgumentException("参数activity不可为null！");
         }
 
-
-        protected UpdaterSetting(Parcel in) {
-            mRemoteVersionCode = in.readInt();
-            mLocalVersionCode = in.readInt();
-            mRemoteApkUri = in.readParcelable(Uri.class.getClassLoader());
-            mIsForceUpdate = in.readByte() != 0;
-            mNotificationVisibilityMode = in.readInt();
-            mNotificationTitle = in.readString();
-            mNeedNotifiedProgress = in.readByte() != 0;
-            mSavedApkName = in.readString();
-        }
+        return new VersionUpdater(activity);
+    }
 
 
-        public UpdaterSetting remoteVersionCode(int versionCode) {
-            if (versionCode < 1) {
-                new IllegalArgumentException("版本号不可小于1");
-            }
-            mRemoteVersionCode = versionCode;
-            return this;
-        }
+    @Override
+    public void check() {
+        mUpdaterSetting.settingCheck();
 
-
-        public UpdaterSetting remoteApkUrl(String apkUrl) {
-            mRemoteApkUri = Uri.parse(checkNullOrEmpty(apkUrl));
-            return this;
-        }
-
-        public UpdaterSetting forceUpdate(boolean isForceUpdate) {
-            mIsForceUpdate = isForceUpdate;
-            return this;
-        }
-
-
-        public UpdaterSetting notificationVisibility(int visibilityMode) {
-
-            switch (visibilityMode) {
-
-                case DownloadManager.Request.VISIBILITY_VISIBLE:
-                case DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED:
-                case DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION:
-                case DownloadManager.Request.VISIBILITY_HIDDEN:
-                    mNotificationVisibilityMode = visibilityMode;
-                    break;
-                default:
-                    mNotificationVisibilityMode = DownloadManager.Request.VISIBILITY_VISIBLE;
-                    break;
-
-            }
-
-            return this;
-        }
-
-
-        public UpdaterSetting notificationTitle(String title) {
-            mNotificationTitle = checkNullOrEmpty(title);
-            return this;
-        }
-
-
-        public UpdaterSetting needNotifiedProgress(boolean need) {
-            mNeedNotifiedProgress = need;
-            return this;
-        }
-
-
-        public UpdaterSetting savedApkName(String apkName) {
-            mSavedApkName = checkNullOrEmpty(apkName);
-            if (!mSavedApkName.endsWith(".apk")) {
-                mSavedApkName = mSavedApkName + ".apk";
-            }
-            return this;
-        }
-
-
-        public int getRemoteVersionCode() {
-            return mRemoteVersionCode;
-        }
-
-        public Uri getRemoteApkUri() {
-            return mRemoteApkUri;
-        }
-
-        public boolean isForceUpdate() {
-            return mIsForceUpdate;
-        }
-
-        public int getNotificationVisibilityMode() {
-            return mNotificationVisibilityMode;
-        }
-
-        public String getNotificationTitle() {
-            return mNotificationTitle;
-        }
-
-        public boolean isNeedNotifiedProgress() {
-            return mNeedNotifiedProgress;
-        }
-
-        public String getSavedApkName() {
-            return mSavedApkName;
-        }
-
-        private void settingCheck() {
-
-            if (mRemoteVersionCode == 0) {
-
-                throw new IllegalStateException("尚未设置远程apk的版本号！");
-            }
-
-            if (mRemoteApkUri == null) {
-                throw new IllegalStateException("尚未设置远程apk的下载地址！");
-            }
-
-            if (mSavedApkName == null) {
-                savedApkName(mRemoteApkUri.getLastPathSegment());
-            }
-
-        }
-
-
-        public void check() {
-
-            settingCheck();
-
-            if (needUpdate()) {
-                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD, this));
-            } else {
-                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE));
-            }
-        }
-
-
-        private boolean needUpdate() {
-            return mRemoteVersionCode > mLocalVersionCode;
-        }
-
-        @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-
-        }
-
-        @Override
-        public void onActivityStarted(Activity activity) {
-            if (!MessageSender.isRegister(activity)) {
-                MessageSender.register(activity);
-            }
-        }
-
-        @Override
-        public void onActivityResumed(Activity activity) {
-
-        }
-
-        @Override
-        public void onActivityPaused(Activity activity) {
-
-        }
-
-        @Override
-        public void onActivityStopped(Activity activity) {
-            if (MessageSender.isRegister(activity)) {
-                MessageSender.unregister(activity);
-            }
-        }
-
-        @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-
-        }
-
-        @Override
-        public void onActivityDestroyed(Activity activity) {
-
-        }
-
-        public static final Creator<UpdaterSetting> CREATOR = new Creator<UpdaterSetting>() {
-            @Override
-            public UpdaterSetting createFromParcel(Parcel in) {
-                return new UpdaterSetting(in);
-            }
-
-            @Override
-            public UpdaterSetting[] newArray(int size) {
-                return new UpdaterSetting[size];
-            }
-        };
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags) {
-            dest.writeInt(mRemoteVersionCode);
-            dest.writeInt(mLocalVersionCode);
-            dest.writeParcelable(mRemoteApkUri, flags);
-            dest.writeByte((byte) (mIsForceUpdate ? 1 : 0));
-            dest.writeInt(mNotificationVisibilityMode);
-            dest.writeString(mNotificationTitle);
-            dest.writeByte((byte) (mNeedNotifiedProgress ? 1 : 0));
-            dest.writeString(mSavedApkName);
+        if (mUpdaterSetting.judgeIfNeedUpdate()) {
+            MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD, mUpdaterSetting));
+        } else {
+            MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE));
         }
     }
 
+
+    @Override
+    public UpdaterBuilder remoteVersionCode(int versionCode) {
+        if (versionCode < 1) {
+            new IllegalArgumentException("版本号不可小于1");
+        }
+        mUpdaterSetting.setRemoteVersionCode(versionCode);
+        return this;
+    }
+
+    @Override
+    public UpdaterBuilder remoteApkUrl(String apkUrl) {
+        mUpdaterSetting.setRemoteApkUri(Uri.parse(Utils.checkNullOrEmpty(apkUrl)));
+        return this;
+    }
+
+    @Override
+    public UpdaterBuilder isForceUpdate(boolean forceUpdate) {
+        mUpdaterSetting.setForceUpdate(forceUpdate);
+        return this;
+    }
+
+    @Override
+    public UpdaterBuilder notificationVisibility(int visibilityMode) {
+        switch (visibilityMode) {
+
+            case DownloadManager.Request.VISIBILITY_VISIBLE:
+            case DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED:
+            case DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION:
+            case DownloadManager.Request.VISIBILITY_HIDDEN:
+                mUpdaterSetting.setNotificationVisibilityMode(visibilityMode);
+                break;
+            default:
+                mUpdaterSetting.setNotificationVisibilityMode(visibilityMode);
+                break;
+
+        }
+
+        return this;
+    }
+
+    @Override
+    public UpdaterBuilder notificationTitle(String title) {
+        mUpdaterSetting.setNotificationTitle(Utils.checkNullOrEmpty(title));
+        return this;
+    }
+
+    @Override
+    public UpdaterBuilder needNotifiedProgress(boolean need) {
+        mUpdaterSetting.setNeedNotifiedProgress(need);
+        return this;
+    }
+
+    @Override
+    public UpdaterBuilder savedApkName(String apkName) {
+        mUpdaterSetting.setSavedApkName(Utils.checkNullOrEmpty(apkName));
+        return this;
+    }
+
+    @Override
+    public UpdaterBuilder detectMode(int detectMode) {
+        switch (detectMode) {
+            case DETECT_MODE_AUTO:
+                mUpdaterSetting.setDetectMode(DETECT_MODE_AUTO);
+                break;
+            case DETECT_MODE_MANUAL:
+                mUpdaterSetting.setDetectMode(DETECT_MODE_MANUAL);
+                break;
+            default:
+                mUpdaterSetting.setDetectMode(DETECT_MODE_MANUAL);
+        }
+        return this;
+    }
+
+    @Override
+    public IVersionUpdater build() {
+        return this;
+    }
 
 }
