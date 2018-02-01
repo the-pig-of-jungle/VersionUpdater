@@ -1,5 +1,6 @@
 package com.coder.zzq.versionupdaterlib.bean;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -13,6 +14,7 @@ public class UpdaterSetting implements Parcelable {
     public static final int DETECT_MODE_MANUAL = 0;
     //自动检测模式
     public static final int DETECT_MODE_AUTO = 1;
+
 
     private int mRemoteVersionCode;
     private int mLocalVersionCode;
@@ -164,7 +166,7 @@ public class UpdaterSetting implements Parcelable {
 
     }
 
-    public boolean judgeIfNeedUpdate() {
-        return mRemoteVersionCode > mLocalVersionCode;
+    public boolean judgeIfLocalVersionUpToDate() {
+        return mLocalVersionCode == mRemoteVersionCode;
     }
 }

@@ -2,9 +2,11 @@ package com.coder.zzq.versionupdaterlib;
 
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.Context;
 import android.net.Uri;
 
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
+import com.coder.zzq.versionupdaterlib.bean.LastDownloadInfo;
 import com.coder.zzq.versionupdaterlib.bean.UpdaterSetting;
 import com.coder.zzq.versionupdaterlib.listener.ActivityCallback;
 import com.coder.zzq.versionupdaterlib.util.Utils;
@@ -17,14 +19,16 @@ import static com.coder.zzq.versionupdaterlib.bean.UpdaterSetting.DETECT_MODE_MA
  * Created by 喜欢、陪你看风景 on 2018/1/31.
  */
 
-public class VersionUpdater implements UpdaterBuilder, IVersionUpdater{
+public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
 
     private static boolean sHasInitMsgSender;
 
+    private Context mAppContext;
     private UpdaterSetting mUpdaterSetting;
 
 
     private VersionUpdater(Activity activity) {
+        mAppContext = activity.getApplicationContext();
         initMessageSenderIfNotExists(activity);
         mUpdaterSetting = new UpdaterSetting();
         mUpdaterSetting.setLocalVersionCode(Utils.localVersionCode(activity));
@@ -58,10 +62,14 @@ public class VersionUpdater implements UpdaterBuilder, IVersionUpdater{
     public void check() {
         mUpdaterSetting.settingCheck();
 
-        if (mUpdaterSetting.judgeIfNeedUpdate()) {
-            MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD, mUpdaterSetting));
-        } else {
+        if (mUpdaterSetting.judgeIfLocalVersionUpToDate()) {
             MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE));
+        } else {
+            LastDownloadInfo lastDownloadInfo = LastDownloadInfo.fetchLastDownloadInfo(mAppContext);
+
+            if (lastDownloadInfo == null || !lastDownloadInfo.isDelayUpdate()) {
+                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD, mUpdaterSetting));
+            }
         }
     }
 

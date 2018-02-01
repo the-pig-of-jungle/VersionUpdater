@@ -17,6 +17,8 @@ import com.coder.zzq.versionupdaterlib.DownloadEventProcessor;
 import com.coder.zzq.versionupdaterlib.MessageSender;
 import com.coder.zzq.versionupdaterlib.VersionUpdater;
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
+import com.coder.zzq.versionupdaterlib.bean.UpdaterSetting;
+import com.coder.zzq.versionupdaterlib.util.Utils;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements DownloadEventProc
                     .remoteVersionCode(2)
                     .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180127/ps_version_2.7.1.apk")
                     .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                    .detectMode(UpdaterSetting.DETECT_MODE_AUTO)
                     .build()
                     .check();
         }
@@ -65,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements DownloadEventProc
                 .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .notificationTitle("PP积配送员")
                 .savedApkName("test.apk")
+                .detectMode(UpdaterSetting.DETECT_MODE_AUTO)
                 .build()
                 .check();
     }
@@ -84,12 +88,13 @@ public class MainActivity extends AppCompatActivity implements DownloadEventProc
                         .setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                event.startDownload(MainActivity.this);
+                                event.updateImmediately(MainActivity.this);
                             }
                         })
                         .setNegativeButton("暂不更新", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                event.delayUpdate(MainActivity.this);
                                 dialog.dismiss();
                             }
                         })
@@ -103,10 +108,10 @@ public class MainActivity extends AppCompatActivity implements DownloadEventProc
                         .setPositiveButton("立即安装", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                event.installApk(MainActivity.this);
+                                event.installAfterDownloadComplete(MainActivity.this);
                             }
                         })
-                        .setNegativeButton("稍后安装", new DialogInterface.OnClickListener() {
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
@@ -116,10 +121,9 @@ public class MainActivity extends AppCompatActivity implements DownloadEventProc
                         .show();
                 break;
             case DownloadEvent.APK_HAS_EXISTS:
-                event.installApk(this);
+                event.installIfApkHasExists(this);
                 break;
         }
 
-        MessageSender.removeDownloadEvent(event);
     }
 }

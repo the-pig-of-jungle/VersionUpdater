@@ -13,7 +13,7 @@ import android.text.TextUtils;
 
 import com.coder.zzq.versionupdaterlib.BuildConfig;
 import com.coder.zzq.versionupdaterlib.bean.DownloadFileInfo;
-import com.coder.zzq.versionupdaterlib.bean.OldDownloadInfo;
+import com.coder.zzq.versionupdaterlib.bean.LastDownloadInfo;
 
 import java.io.File;
 
@@ -85,26 +85,7 @@ public class Utils {
     }
 
 
-    public static final String REMOTE_VERSION_INFO_PREF = "remote_version_info";
-    public static final String VERSION_INFO = "version_info";
 
-
-    private static SharedPreferences remoteVersionInfoPref(Context context) {
-        return context.getSharedPreferences(REMOTE_VERSION_INFO_PREF, Context.MODE_PRIVATE);
-    }
-
-    public static void storeOldDownloadInfo(Context context, OldDownloadInfo oldDownloadInfo) {
-        remoteVersionInfoPref(context).edit().putString(VERSION_INFO, oldDownloadInfo.toString()).commit();
-    }
-
-    public static OldDownloadInfo fetchOldDownloadInfo(Context context) {
-        String jsonStr = remoteVersionInfoPref(context).getString(VERSION_INFO, null);
-        return jsonStr == null ? null : new OldDownloadInfo(jsonStr);
-    }
-
-    public static void clearStoredOldDownloadInfo(Context context) {
-        remoteVersionInfoPref(context).edit().putString(VERSION_INFO, null).commit();
-    }
 
 
     public static int localVersionCode(Context context) {

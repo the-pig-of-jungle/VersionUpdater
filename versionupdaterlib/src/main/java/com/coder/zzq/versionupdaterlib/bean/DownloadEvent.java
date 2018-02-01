@@ -3,8 +3,10 @@ package com.coder.zzq.versionupdaterlib.bean;
 import android.content.Context;
 import android.net.Uri;
 
+import com.coder.zzq.versionupdaterlib.MessageSender;
 import com.coder.zzq.versionupdaterlib.service.DownloadService;
 import com.coder.zzq.versionupdaterlib.util.Utils;
+
 
 /**
  * Created by pig on 2018/1/27.
@@ -56,6 +58,7 @@ public class DownloadEvent {
     }
 
     public int getEvent() {
+        MessageSender.removeDownloadEvent(this);
         return mEvent;
     }
 
@@ -64,25 +67,40 @@ public class DownloadEvent {
     }
 
 
-    public void suppressUpdate() {
-        if (mUpdaterSetting != null && !mUpdaterSetting.isForceUpdate()) {
-            switch (mUpdaterSetting.getDetectMode()) {
+    public void delayUpdate(Context context) {
+        if (mUpdaterSetting != null && !mUpdaterSetting.isForceUpdate() && mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_AUTO) {
+            LastDownloadInfo lastDownloadInfo = LastDownloadInfo.fetchLastDownloadInfo(context);
 
+            if (lastDownloadInfo != null){
+                lastDownloadInfo.setDelayUpdate(true);
+                LastDownloadInfo.storeLastDownloadInfo(context, lastDownloadInfo);
             }
+
         }
     }
 
-    public void startDownload(Context context) {
+    public void updateImmediately(Context context) {
         if (context != null && mUpdaterSetting != null) {
             DownloadService.start(context, mUpdaterSetting);
             mUpdaterSetting = null;
         }
     }
 
-    public void installApk(Context context) {
+
+    private void installApk(Context context) {
         if (context != null && mLocalApkFileUri != null) {
             Utils.installApk(context, mLocalApkFileUri);
             mLocalApkFileUri = null;
         }
     }
+
+
+    public void installAfterDownloadComplete(Context context) {
+            installApk(context);
+    }
+
+    public void installIfApkHasExists(Context context) {
+            installApk(context);
+    }
+
 }

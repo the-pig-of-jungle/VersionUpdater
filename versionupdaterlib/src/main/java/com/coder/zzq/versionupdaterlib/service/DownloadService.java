@@ -10,7 +10,7 @@ import android.support.annotation.Nullable;
 import com.coder.zzq.versionupdaterlib.MessageSender;
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
 import com.coder.zzq.versionupdaterlib.bean.DownloadFileInfo;
-import com.coder.zzq.versionupdaterlib.bean.OldDownloadInfo;
+import com.coder.zzq.versionupdaterlib.bean.LastDownloadInfo;
 import com.coder.zzq.versionupdaterlib.bean.UpdaterSetting;
 import com.coder.zzq.versionupdaterlib.util.Utils;
 
@@ -33,7 +33,7 @@ public class DownloadService extends IntentService {
 
         UpdaterSetting updaterSetting = intent.getParcelableExtra(UPDATER_SETTING);
 
-        OldDownloadInfo oldDownloadInfo = Utils.fetchOldDownloadInfo(this);
+        LastDownloadInfo oldDownloadInfo = LastDownloadInfo.fetchLastDownloadInfo(this);
 
         if (oldDownloadInfo != null && oldDownloadInfo.getVersionCode() == updaterSetting.getRemoteVersionCode()) {
             DownloadFileInfo downloadFileInfo = Utils.getInfoOfDownloadFile(this, oldDownloadInfo.getDownloadId());
@@ -51,7 +51,7 @@ public class DownloadService extends IntentService {
                         case DownloadManager.ERROR_INSUFFICIENT_SPACE:
                             MessageSender.sendMsg(new DownloadEvent(DownloadEvent.DOWNLOAD_FAILED, downloadFileInfo.getReason()));
                             Utils.getDownloadManager(this).remove(oldDownloadInfo.getDownloadId());
-                            Utils.clearStoredOldDownloadInfo(this);
+                            LastDownloadInfo.clearStoredOldDownloadInfo(this);
                             break;
                         case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
                             File deletedFile = new File(downloadFileInfo.getUri().getEncodedPath());
@@ -80,17 +80,17 @@ public class DownloadService extends IntentService {
         }
     }
 
-    private void clearAndDownloadAgain(UpdaterSetting updaterSetting, OldDownloadInfo oldDownloadInfo) {
+    private void clearAndDownloadAgain(UpdaterSetting updaterSetting, LastDownloadInfo oldDownloadInfo) {
 
         if (oldDownloadInfo != null) {
             Utils.getDownloadManager(this).remove(oldDownloadInfo.getDownloadId());
             oldDownloadInfo.reset();
         } else {
-            oldDownloadInfo = new OldDownloadInfo();
+            oldDownloadInfo = new LastDownloadInfo();
         }
 
 
-        Utils.clearStoredOldDownloadInfo(this);
+        LastDownloadInfo.clearStoredOldDownloadInfo(this);
 
 
         DownloadManager.Request request = new DownloadManager.Request(updaterSetting.getRemoteApkUri())
@@ -103,7 +103,7 @@ public class DownloadService extends IntentService {
         oldDownloadInfo.setVersionCode(updaterSetting.getRemoteVersionCode());
         oldDownloadInfo.setForceUpdate(updaterSetting.isForceUpdate());
 
-        Utils.storeOldDownloadInfo(this, oldDownloadInfo);
+        LastDownloadInfo.storeLastDownloadInfo(this, oldDownloadInfo);
     }
 
 
