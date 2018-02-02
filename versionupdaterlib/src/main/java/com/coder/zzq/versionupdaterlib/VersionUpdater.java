@@ -144,7 +144,9 @@ public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
             default:
                 mUpdaterSetting.setDetectMode(DETECT_MODE_MANUAL);
         }
+
         return this;
+
     }
 
     @Override
