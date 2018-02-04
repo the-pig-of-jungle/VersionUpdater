@@ -60,17 +60,20 @@ public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
 
     @Override
     public void check() {
+
         mUpdaterSetting.settingCheck();
 
-        if (mUpdaterSetting.judgeIfLocalVersionUpToDate()) {
-            MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE));
+        if (mUpdaterSetting.isLocalVersionUpToDate()) {
+            if (mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_MANUAL) {
+                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE));
+            }
         } else {
-            LastDownloadInfo lastDownloadInfo = LastDownloadInfo.fetchLastDownloadInfo(mAppContext);
-
-            if (lastDownloadInfo == null || !lastDownloadInfo.isDelayUpdate()) {
+            LastDownloadInfo lastDownloadInfo = LastDownloadInfo.fetch(mAppContext);
+            if (mUpdaterSetting.isForceUpdate() || !lastDownloadInfo.isDelayUpdate()) {
                 MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD, mUpdaterSetting));
             }
         }
+
     }
 
 

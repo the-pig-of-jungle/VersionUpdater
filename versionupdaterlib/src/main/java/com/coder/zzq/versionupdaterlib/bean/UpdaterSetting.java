@@ -4,6 +4,9 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
+
+import com.coder.zzq.versionupdaterlib.util.Utils;
 
 /**
  * Created by 喜欢、陪你看风景 on 2018/1/31.
@@ -121,6 +124,17 @@ public class UpdaterSetting implements Parcelable {
         }
     }
 
+    public String getBaseApkName(){
+        if (mSavedApkName == null || mSavedApkName.trim().length() == 0){
+            return "";
+        }
+
+        int index  = mSavedApkName.lastIndexOf(".apk");
+
+        return mSavedApkName.substring(0,index);
+
+    }
+
     public int getDetectMode() {
         return mDetectMode;
     }
@@ -166,7 +180,7 @@ public class UpdaterSetting implements Parcelable {
 
     }
 
-    public boolean judgeIfLocalVersionUpToDate() {
+    public boolean isLocalVersionUpToDate() {
         return mLocalVersionCode == mRemoteVersionCode;
     }
 }

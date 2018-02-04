@@ -23,7 +23,8 @@ public class DownloadReceiver extends BroadcastReceiver {
         switch (intent.getAction()) {
             case DownloadManager.ACTION_DOWNLOAD_COMPLETE:
                 long downloadId = intent.getExtras().getLong(DownloadManager.EXTRA_DOWNLOAD_ID);
-                if (downloadId == LastDownloadInfo.fetchLastDownloadInfo(context).getDownloadId()) {
+
+                if (downloadId == LastDownloadInfo.fetch(context).getDownloadId()) {
                     DownloadFileInfo info = Utils.getInfoOfDownloadFile(context, downloadId);
                     if (info.getDownloadStatus() == DownloadManager.STATUS_SUCCESSFUL && info.getUri() != null) {
                         MessageSender.sendMsg(new DownloadEvent(DownloadEvent.DOWNLOAD_COMPLETE, info.getUri()));

@@ -20,7 +20,6 @@ public class DownloadEvent {
     public static final int DOWNLOAD_PAUSED = 4;
     public static final int DOWNLOAD_FAILED = 5;
     public static final int DOWNLOAD_COMPLETE = 6;
-    public static final int APK_HAS_EXISTS = 7;
 
     private int mEvent;
 
@@ -58,7 +57,6 @@ public class DownloadEvent {
     }
 
     public int getEvent() {
-        MessageSender.removeDownloadEvent(this);
         return mEvent;
     }
 
@@ -68,14 +66,9 @@ public class DownloadEvent {
 
 
     public void delayUpdate(Context context) {
-        if (mUpdaterSetting != null && !mUpdaterSetting.isForceUpdate() && mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_AUTO) {
-            LastDownloadInfo lastDownloadInfo = LastDownloadInfo.fetchLastDownloadInfo(context);
-
-            if (lastDownloadInfo != null){
-                lastDownloadInfo.setDelayUpdate(true);
-                LastDownloadInfo.storeLastDownloadInfo(context, lastDownloadInfo);
-            }
-
+        if (mUpdaterSetting != null && !mUpdaterSetting.isForceUpdate()
+                && mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_AUTO) {
+            LastDownloadInfo.update(context).delayUpdate(true).store();
         }
     }
 
@@ -87,20 +80,12 @@ public class DownloadEvent {
     }
 
 
-    private void installApk(Context context) {
+    public void installAfterDownloadComplete(Context context) {
         if (context != null && mLocalApkFileUri != null) {
             Utils.installApk(context, mLocalApkFileUri);
             mLocalApkFileUri = null;
         }
     }
 
-
-    public void installAfterDownloadComplete(Context context) {
-            installApk(context);
-    }
-
-    public void installIfApkHasExists(Context context) {
-            installApk(context);
-    }
 
 }

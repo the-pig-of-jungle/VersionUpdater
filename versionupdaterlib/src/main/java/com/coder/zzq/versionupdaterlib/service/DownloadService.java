@@ -15,6 +15,7 @@ import com.coder.zzq.versionupdaterlib.bean.UpdaterSetting;
 import com.coder.zzq.versionupdaterlib.util.Utils;
 
 import java.io.File;
+import java.util.Date;
 
 /**
  * Created by 朱志强 on 2018/1/27.
@@ -33,10 +34,10 @@ public class DownloadService extends IntentService {
 
         UpdaterSetting updaterSetting = intent.getParcelableExtra(UPDATER_SETTING);
 
-        LastDownloadInfo oldDownloadInfo = LastDownloadInfo.fetchLastDownloadInfo(this);
+        LastDownloadInfo lastDownloadInfo = LastDownloadInfo.fetch(this);
 
-        if (oldDownloadInfo != null && oldDownloadInfo.getVersionCode() == updaterSetting.getRemoteVersionCode()) {
-            DownloadFileInfo downloadFileInfo = Utils.getInfoOfDownloadFile(this, oldDownloadInfo.getDownloadId());
+        if (lastDownloadInfo.getVersionCode() == updaterSetting.getRemoteVersionCode()) {
+            DownloadFileInfo downloadFileInfo = Utils.getInfoOfDownloadFile(this, lastDownloadInfo.getDownloadId());
             switch (downloadFileInfo.getDownloadStatus()) {
                 case DownloadManager.STATUS_PENDING:
                 case DownloadManager.STATUS_RUNNING:
@@ -50,48 +51,40 @@ public class DownloadService extends IntentService {
                         case DownloadManager.ERROR_DEVICE_NOT_FOUND:
                         case DownloadManager.ERROR_INSUFFICIENT_SPACE:
                             MessageSender.sendMsg(new DownloadEvent(DownloadEvent.DOWNLOAD_FAILED, downloadFileInfo.getReason()));
-                            Utils.getDownloadManager(this).remove(oldDownloadInfo.getDownloadId());
-                            LastDownloadInfo.clearStoredOldDownloadInfo(this);
+                            Utils.getDownloadManager(this).remove(lastDownloadInfo.getDownloadId());
+                            LastDownloadInfo.clear(this);
                             break;
                         case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
-                            File deletedFile = new File(downloadFileInfo.getUri().getEncodedPath());
-                            deletedFile.delete();
-                            clearAndDownloadAgain(updaterSetting, oldDownloadInfo);
+                            updaterSetting.setSavedApkName(updaterSetting.getBaseApkName() + new Date().toString());
+                            downloadAgain(updaterSetting, lastDownloadInfo);
                             break;
                         default:
-                            clearAndDownloadAgain(updaterSetting, oldDownloadInfo);
+                            downloadAgain(updaterSetting, lastDownloadInfo);
                             break;
                     }
                 case DownloadManager.STATUS_SUCCESSFUL:
                     File file = new File(downloadFileInfo.getUri().getEncodedPath());
                     if (file.exists() && file.length() == downloadFileInfo.getFileSizeBytes()) {
-                        MessageSender.sendMsg(new DownloadEvent(DownloadEvent.APK_HAS_EXISTS, downloadFileInfo.getUri()));
+                        Utils.installApk(this,downloadFileInfo.getUri());
                     } else {
-                        clearAndDownloadAgain(updaterSetting, oldDownloadInfo);
+                        downloadAgain(updaterSetting, lastDownloadInfo);
                     }
                     break;
                 case DownloadFileInfo.STATUS_NO_EXISTS:
-                    clearAndDownloadAgain(updaterSetting, oldDownloadInfo);
+                    downloadAgain(updaterSetting, lastDownloadInfo);
                     break;
             }
 
         } else {
-            clearAndDownloadAgain(updaterSetting, null);
+            downloadAgain(updaterSetting, lastDownloadInfo);
         }
     }
 
-    private void clearAndDownloadAgain(UpdaterSetting updaterSetting, LastDownloadInfo oldDownloadInfo) {
-
-        if (oldDownloadInfo != null) {
-            Utils.getDownloadManager(this).remove(oldDownloadInfo.getDownloadId());
-            oldDownloadInfo.reset();
-        } else {
-            oldDownloadInfo = new LastDownloadInfo();
+    private void downloadAgain(UpdaterSetting updaterSetting, LastDownloadInfo lastDownloadInfo) {
+        if (lastDownloadInfo.getDownloadId() != -1) {
+            Utils.getDownloadManager(this).remove(0);
+            LastDownloadInfo.clear(this);
         }
-
-
-        LastDownloadInfo.clearStoredOldDownloadInfo(this);
-
 
         DownloadManager.Request request = new DownloadManager.Request(updaterSetting.getRemoteApkUri())
                 .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, updaterSetting.getSavedApkName())
@@ -99,11 +92,7 @@ public class DownloadService extends IntentService {
                 .setTitle(updaterSetting.getNotificationTitle());
         long downloadId = Utils.getDownloadManager(this).enqueue(request);
 
-        oldDownloadInfo.setDownloadId(downloadId);
-        oldDownloadInfo.setVersionCode(updaterSetting.getRemoteVersionCode());
-        oldDownloadInfo.setForceUpdate(updaterSetting.isForceUpdate());
-
-        LastDownloadInfo.storeLastDownloadInfo(this, oldDownloadInfo);
+        LastDownloadInfo.update(this).downloadId(downloadId).versionCode(updaterSetting.getRemoteVersionCode()).store();
     }
 
 
