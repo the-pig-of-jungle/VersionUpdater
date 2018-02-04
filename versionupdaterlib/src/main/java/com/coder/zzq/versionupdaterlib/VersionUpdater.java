@@ -69,7 +69,8 @@ public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
             }
         } else {
             LastDownloadInfo lastDownloadInfo = LastDownloadInfo.fetch(mAppContext);
-            if (mUpdaterSetting.isForceUpdate() || !lastDownloadInfo.isDelayUpdate()) {
+
+            if (mUpdaterSetting.isForceUpdate() || ) {
                 MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD, mUpdaterSetting));
             }
         }

@@ -34,10 +34,10 @@ public class DownloadService extends IntentService {
 
         UpdaterSetting updaterSetting = intent.getParcelableExtra(UPDATER_SETTING);
 
-        LastDownloadInfo lastDownloadInfo = LastDownloadInfo.fetch(this);
+        LastDownloadInfo downloadInfo = LastDownloadInfo.fetch(this);
 
-        if (lastDownloadInfo.getVersionCode() == updaterSetting.getRemoteVersionCode()) {
-            DownloadFileInfo downloadFileInfo = Utils.getInfoOfDownloadFile(this, lastDownloadInfo.getDownloadId());
+        if (downloadInfo != null && downloadInfo.getVersionCode() == updaterSetting.getRemoteVersionCode()) {
+            DownloadFileInfo downloadFileInfo = Utils.getInfoOfDownloadFile(this, downloadInfo.getDownloadId());
             switch (downloadFileInfo.getDownloadStatus()) {
                 case DownloadManager.STATUS_PENDING:
                 case DownloadManager.STATUS_RUNNING:
@@ -51,15 +51,13 @@ public class DownloadService extends IntentService {
                         case DownloadManager.ERROR_DEVICE_NOT_FOUND:
                         case DownloadManager.ERROR_INSUFFICIENT_SPACE:
                             MessageSender.sendMsg(new DownloadEvent(DownloadEvent.DOWNLOAD_FAILED, downloadFileInfo.getReason()));
-                            Utils.getDownloadManager(this).remove(lastDownloadInfo.getDownloadId());
-                            LastDownloadInfo.clear(this);
                             break;
                         case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
                             updaterSetting.setSavedApkName(updaterSetting.getBaseApkName() + new Date().toString());
-                            downloadAgain(updaterSetting, lastDownloadInfo);
+                            downloadAgain(updaterSetting, downloadInfo);
                             break;
                         default:
-                            downloadAgain(updaterSetting, lastDownloadInfo);
+                            downloadAgain(updaterSetting, downloadInfo);
                             break;
                     }
                 case DownloadManager.STATUS_SUCCESSFUL:
@@ -67,32 +65,37 @@ public class DownloadService extends IntentService {
                     if (file.exists() && file.length() == downloadFileInfo.getFileSizeBytes()) {
                         Utils.installApk(this,downloadFileInfo.getUri());
                     } else {
-                        downloadAgain(updaterSetting, lastDownloadInfo);
+                        downloadAgain(updaterSetting, downloadInfo);
                     }
                     break;
                 case DownloadFileInfo.STATUS_NO_EXISTS:
-                    downloadAgain(updaterSetting, lastDownloadInfo);
+                    downloadAgain(updaterSetting, downloadInfo);
                     break;
             }
 
         } else {
-            downloadAgain(updaterSetting, lastDownloadInfo);
+            downloadAgain(updaterSetting, downloadInfo);
         }
     }
 
-    private void downloadAgain(UpdaterSetting updaterSetting, LastDownloadInfo lastDownloadInfo) {
-        if (lastDownloadInfo.getDownloadId() != -1) {
-            Utils.getDownloadManager(this).remove(0);
-            LastDownloadInfo.clear(this);
+    private void downloadAgain(UpdaterSetting updaterSetting, LastDownloadInfo downloadInfo) {
+
+        if (downloadInfo != null) {
+            Utils.getDownloadManager(this).remove(downloadInfo.getDownloadId());
+            downloadInfo.reset();
+        }else {
+            downloadInfo = new LastDownloadInfo();
         }
+
+        LastDownloadInfo.clear(this);
 
         DownloadManager.Request request = new DownloadManager.Request(updaterSetting.getRemoteApkUri())
                 .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, updaterSetting.getSavedApkName())
                 .setNotificationVisibility(updaterSetting.getNotificationVisibilityMode())
                 .setTitle(updaterSetting.getNotificationTitle());
         long downloadId = Utils.getDownloadManager(this).enqueue(request);
-
-        LastDownloadInfo.update(this).downloadId(downloadId).versionCode(updaterSetting.getRemoteVersionCode()).store();
+        downloadInfo.setDownloadId(downloadId).setVersionCode(updaterSetting.getRemoteVersionCode());
+        LastDownloadInfo.store(this,downloadInfo);
     }
 
 

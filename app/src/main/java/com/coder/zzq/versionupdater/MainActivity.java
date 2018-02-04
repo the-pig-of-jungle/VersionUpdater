@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, mPermission, 1);
         } else {
             VersionUpdater.builder(this)
-                    .remoteVersionCode(1)
+                    .remoteVersionCode(2)
                     .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180127/ps_version_2.7.1.apk")
                     .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 //                    .isForceUpdate(true)
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void beforeNewVersionDownload(Activity activity, DownloadEvent event) {
-                SmartToast.showInCenter("已是最新版本！");
+                SmartToast.showInCenter("有新版本！");
             }
 
             @Override

@@ -7,6 +7,8 @@ import com.coder.zzq.versionupdaterlib.MessageSender;
 import com.coder.zzq.versionupdaterlib.service.DownloadService;
 import com.coder.zzq.versionupdaterlib.util.Utils;
 
+import static com.coder.zzq.versionupdaterlib.bean.LastDownloadInfo.fetch;
+
 
 /**
  * Created by pig on 2018/1/27.
@@ -68,7 +70,8 @@ public class DownloadEvent {
     public void delayUpdate(Context context) {
         if (mUpdaterSetting != null && !mUpdaterSetting.isForceUpdate()
                 && mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_AUTO) {
-            LastDownloadInfo.update(context).delayUpdate(true).store();
+            LastDownloadInfo downloadInfo = LastDownloadInfo.fetch(context).setDelayUpdate(true);
+            LastDownloadInfo.store(context,downloadInfo);
         }
     }
 
