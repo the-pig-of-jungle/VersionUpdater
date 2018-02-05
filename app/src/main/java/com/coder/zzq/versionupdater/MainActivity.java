@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void beforeNewVersionDownload(final Activity activity, final DownloadEvent downloadEvent) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity)
-                        .setTitle("发现新版本v" + downloadEvent.getNewVersionName())
+                        .setTitle("发现新版本 v" + downloadEvent.getNewVersionName())
                         .setMessage(downloadEvent.getUpdateDesc())
                         .setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
                             @Override
