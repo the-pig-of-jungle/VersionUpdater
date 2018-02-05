@@ -17,35 +17,38 @@ public class EventProcessor {
     private DownloadEvent mDownloadEvent;
 
 
-    private EventProcessor(Activity activity,DownloadEvent event){
+    private EventProcessor(Activity activity, DownloadEvent downloadEvent) {
         mActivity = activity;
-        mDownloadEvent = event;
+        mDownloadEvent = downloadEvent;
     }
 
-    public static EventProcessor create(Activity activity,DownloadEvent event){
-        return new EventProcessor(activity,event);
+    public static EventProcessor create(Activity activity, DownloadEvent downloadEvent) {
+        return new EventProcessor(activity, downloadEvent);
     }
 
-    public void process(Callback callback){
+    public void process(Callback callback) {
 
-        switch (mDownloadEvent.getEvent()){
+        switch (mDownloadEvent.getEventType()) {
             case DownloadEvent.LOCAL_VERSION_UP_TO_DATE:
-                callback.localVersionUpToDate(mActivity,mDownloadEvent);
+                callback.localVersionUpToDate(mActivity, mDownloadEvent);
+                break;
+            case DownloadEvent.AFTER_DOWNLOAD_HAS_STARTED:
+                callback.afterDownloadHasStarted(mActivity,mDownloadEvent);
                 break;
             case DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD:
-                callback.beforeNewVersionDownload(mActivity,mDownloadEvent);
+                callback.beforeNewVersionDownload(mActivity, mDownloadEvent);
                 break;
             case DownloadEvent.DOWNLOAD_IN_PROGRESS:
-                callback.downloadInProgress(mActivity,mDownloadEvent);
+                callback.downloadInProgress(mActivity, mDownloadEvent);
                 break;
             case DownloadEvent.DOWNLOAD_PAUSED:
-                callback.downloadPaused(mActivity,mDownloadEvent);
+                callback.downloadPaused(mActivity, mDownloadEvent);
                 break;
             case DownloadEvent.DOWNLOAD_FAILED:
-                callback.downloadFailed(mActivity,mDownloadEvent);
+                callback.downloadFailed(mActivity, mDownloadEvent);
                 break;
             case DownloadEvent.DOWNLOAD_COMPLETE:
-                callback.downloadComplete(mActivity,mDownloadEvent);
+                callback.downloadComplete(mActivity, mDownloadEvent);
                 break;
         }
 
@@ -54,18 +57,22 @@ public class EventProcessor {
         mDownloadEvent = null;
     }
 
-    public interface Callback{
-        public void localVersionUpToDate(Activity activity,DownloadEvent downloadEvent);
+    public interface Callback {
+        void localVersionUpToDate(final Activity activity, DownloadEvent downloadEvent);
 
-        public void beforeNewVersionDownload(Activity activity,DownloadEvent event);
+        void beforeNewVersionDownload(final Activity activity, DownloadEvent downloadEvent);
 
-        public void downloadInProgress(Activity activity,DownloadEvent event);
+        void afterDownloadHasStarted(final Activity activity,DownloadEvent downloadEvent);
 
-        public void downloadPaused(Activity activity,DownloadEvent event);
+        void downloadComplete(final Activity activity, DownloadEvent downloadEvent);
 
-        public void downloadFailed(Activity activity,DownloadEvent event);
+        void downloadInProgress(final Activity activity, DownloadEvent downloadEvent);
 
-        public void downloadComplete(Activity activity,DownloadEvent event);
+        void downloadPaused(final Activity activity, DownloadEvent downloadEvent);
+
+        void downloadFailed(final Activity activity, DownloadEvent downloadEvent);
+
+
     }
 
 

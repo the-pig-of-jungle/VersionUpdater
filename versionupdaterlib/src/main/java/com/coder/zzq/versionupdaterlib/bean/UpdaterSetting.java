@@ -20,8 +20,10 @@ public class UpdaterSetting implements Parcelable {
 
 
     private int mRemoteVersionCode;
+    private String mRemoteVersionName;
     private int mLocalVersionCode;
     private Uri mRemoteApkUri;
+    private String mUpdateDesc;
     private boolean mIsForceUpdate;
     private int mNotificationVisibilityMode;
     private String mNotificationTitle;
@@ -35,7 +37,9 @@ public class UpdaterSetting implements Parcelable {
 
     protected UpdaterSetting(Parcel in) {
         mRemoteVersionCode = in.readInt();
+        mRemoteVersionName = in.readString();
         mLocalVersionCode = in.readInt();
+        mUpdateDesc = in.readString();
         mRemoteApkUri = in.readParcelable(Uri.class.getClassLoader());
         mIsForceUpdate = in.readByte() != 0;
         mNotificationVisibilityMode = in.readInt();
@@ -65,6 +69,14 @@ public class UpdaterSetting implements Parcelable {
         mRemoteVersionCode = remoteVersionCode;
     }
 
+    public String getRemoteVersionName() {
+        return mRemoteVersionName == null ? "" : mRemoteVersionName;
+    }
+
+    public void setRemoteVersionName(String remoteVersionName) {
+        mRemoteVersionName = remoteVersionName;
+    }
+
     public int getLocalVersionCode() {
         return mLocalVersionCode;
     }
@@ -79,6 +91,14 @@ public class UpdaterSetting implements Parcelable {
 
     public void setRemoteApkUri(Uri remoteApkUri) {
         mRemoteApkUri = remoteApkUri;
+    }
+
+    public String getUpdateDesc() {
+        return mUpdateDesc;
+    }
+
+    public void setUpdateDesc(String updateDesc) {
+        mUpdateDesc = updateDesc;
     }
 
     public boolean isForceUpdate() {
@@ -124,14 +144,14 @@ public class UpdaterSetting implements Parcelable {
         }
     }
 
-    public String getBaseApkName(){
-        if (mSavedApkName == null || mSavedApkName.trim().length() == 0){
+    public String getBaseApkName() {
+        if (mSavedApkName == null || mSavedApkName.trim().length() == 0) {
             return "";
         }
 
-        int index  = mSavedApkName.lastIndexOf(".apk");
+        int index = mSavedApkName.lastIndexOf(".apk");
 
-        return mSavedApkName.substring(0,index);
+        return mSavedApkName.substring(0, index);
 
     }
 
@@ -153,7 +173,9 @@ public class UpdaterSetting implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mRemoteVersionCode);
+        dest.writeString(mRemoteVersionName);
         dest.writeInt(mLocalVersionCode);
+        dest.writeString(mUpdateDesc);
         dest.writeParcelable(mRemoteApkUri, flags);
         dest.writeByte((byte) (mIsForceUpdate ? 1 : 0));
         dest.writeInt(mNotificationVisibilityMode);
@@ -183,4 +205,6 @@ public class UpdaterSetting implements Parcelable {
     public boolean isLocalVersionUpToDate() {
         return mLocalVersionCode == mRemoteVersionCode;
     }
+
+
 }

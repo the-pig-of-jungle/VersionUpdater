@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.coder.zzq.smartshow.snackbar.SmartSnackbar;
 import com.coder.zzq.smartshow.toast.SmartToast;
 
 import com.coder.zzq.versionupdaterlib.EventProcessor;
@@ -26,7 +27,6 @@ import com.coder.zzq.versionupdaterlib.util.Utils;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Date;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -56,7 +56,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             VersionUpdater.builder(this)
                     .remoteVersionCode(2)
-                    .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180127/ps_version_2.7.1.apk")
+                    .remoteVersionName("3.7.1")
+                    .updateDesc("我愛你")
+                    .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180203/ps_2.8.3.apk")
                     .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 //                    .isForceUpdate(true)
                     .detectMode(UpdaterSetting.DETECT_MODE_MANUAL)
@@ -72,7 +74,9 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         VersionUpdater.builder(this)
                 .remoteVersionCode(1)
+                .remoteVersionName("3.7.1")
                 .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180127/ps_version_2.7.1.apk")
+                .updateDesc("")
                 .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .notificationTitle("PP积配送员")
                 .savedApkName("test.apk")
@@ -85,40 +89,70 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onReceiveDownloadEvent(DownloadEvent event) {
-
-
-        EventProcessor.create(this, event).process(new EventProcessor.Callback() {
+    public void onReceiveDownloadEvent(final DownloadEvent downloadEvent) {
+        EventProcessor.create(this, downloadEvent).process(new EventProcessor.Callback() {
             @Override
             public void localVersionUpToDate(Activity activity, DownloadEvent downloadEvent) {
-                SmartToast.showInCenter("已是最新版本！");
+                SmartToast.showInCenter("当前已为最新版本！");
             }
 
             @Override
-            public void beforeNewVersionDownload(Activity activity, DownloadEvent event) {
-                SmartToast.showInCenter("有新版本！");
+            public void beforeNewVersionDownload(final Activity activity, final DownloadEvent downloadEvent) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity)
+                        .setTitle("发现新版本v" + downloadEvent.getNewVersionName())
+                        .setMessage(downloadEvent.getUpdateDesc())
+                        .setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                downloadEvent.updateImmediately(activity);
+                            }
+                        }).setCancelable(downloadEvent.isForceUpdate());
+
+                if (!downloadEvent.isForceUpdate()) {
+                    builder.setNegativeButton("暂不更新", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            downloadEvent.delayUpdate(activity);
+                        }
+                    });
+                }
+
+                AlertDialog dialog = builder.create();
+                dialog.setCanceledOnTouchOutside(false);
+                dialog.show();
+
             }
 
             @Override
-            public void downloadInProgress(Activity activity, DownloadEvent event) {
-                SmartToast.showInCenter("正在下载中！");
+            public void afterDownloadHasStarted(final Activity activity, final DownloadEvent downloadEvent) {
+                SmartToast.showInCenter("已在后台下载新版本！");
             }
 
             @Override
-            public void downloadPaused(Activity activity, DownloadEvent event) {
-                SmartToast.showInCenter("下载暂停！");
+            public void downloadComplete(Activity activity, DownloadEvent downloadEvent) {
+
             }
 
             @Override
-            public void downloadFailed(Activity activity, DownloadEvent event) {
-                SmartToast.show("下载失败！");
+            public void downloadInProgress(Activity activity, DownloadEvent downloadEvent) {
+
             }
 
             @Override
-            public void downloadComplete(Activity activity, DownloadEvent event) {
+            public void downloadPaused(Activity activity, DownloadEvent downloadEvent) {
+
+            }
+
+            @Override
+            public void downloadFailed(Activity activity, DownloadEvent downloadEvent) {
 
             }
         });
     }
+
+
 }

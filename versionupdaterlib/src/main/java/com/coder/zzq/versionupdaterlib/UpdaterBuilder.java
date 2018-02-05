@@ -8,7 +8,11 @@ public interface UpdaterBuilder {
 
     UpdaterBuilder remoteVersionCode(int versionCode);
 
+    UpdaterBuilder remoteVersionName(String versionName);
+
     UpdaterBuilder remoteApkUrl(String apkUrl);
+
+    UpdaterBuilder updateDesc(String desc);
 
     UpdaterBuilder isForceUpdate(boolean forceUpdate);
 
@@ -23,4 +27,6 @@ public interface UpdaterBuilder {
     UpdaterBuilder detectMode(int detectMode);
 
     IVersionUpdater build();
+
+
 }

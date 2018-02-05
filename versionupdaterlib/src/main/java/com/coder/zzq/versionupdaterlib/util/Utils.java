@@ -65,7 +65,7 @@ public class Utils {
 
     public static void installApk(Context context, Uri uri) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            uri = FileProvider.getUriForFile(context, BuildConfig.FILE_PROVIDER_AUTHORITIES, new File(uri.getEncodedPath()));
+            uri = FileProvider.getUriForFile(context, BuildConfig.FILE_PROVIDER_AUTHORITIES, new File(uri.getPath()));
         }
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW)
@@ -82,6 +82,14 @@ public class Utils {
         }
 
         return str;
+    }
+
+    public static  <T> T checkNull(T obj,String errorTip){
+        if (obj == null){
+            throw new IllegalArgumentException(errorTip);
+        }
+
+        return obj;
     }
 
 

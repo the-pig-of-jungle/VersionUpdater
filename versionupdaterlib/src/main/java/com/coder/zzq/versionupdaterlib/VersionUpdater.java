@@ -50,11 +50,9 @@ public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
 
 
     public static UpdaterBuilder builder(Activity activity) {
-        if (activity == null) {
-            throw new IllegalArgumentException("参数activity不可为null！");
-        }
 
-        return new VersionUpdater(activity);
+        return new VersionUpdater(Utils.checkNull(activity, "参数activity不可为null！"));
+
     }
 
 
@@ -62,17 +60,13 @@ public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
     public void check() {
 
         mUpdaterSetting.settingCheck();
-
+        LastDownloadInfo downloadInfo = LastDownloadInfo.fetch(mAppContext);
         if (mUpdaterSetting.isLocalVersionUpToDate()) {
             if (mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_MANUAL) {
-                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE));
+                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE,mUpdaterSetting));
             }
-        } else {
-            LastDownloadInfo lastDownloadInfo = LastDownloadInfo.fetch(mAppContext);
-
-            if (mUpdaterSetting.isForceUpdate() || ) {
-                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD, mUpdaterSetting));
-            }
+        } else if (mUpdaterSetting.isForceUpdate() || mUpdaterSetting.getDetectMode()== UpdaterSetting.DETECT_MODE_MANUAL ||!LastDownloadInfo.isDelayUpdate(downloadInfo)) {
+            MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD,mUpdaterSetting));
         }
 
     }
@@ -87,9 +81,22 @@ public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
         return this;
     }
 
+
+    @Override
+    public UpdaterBuilder remoteVersionName(String versionName) {
+        mUpdaterSetting.setRemoteVersionName(Utils.checkNullOrEmpty(versionName));
+        return this;
+    }
+
     @Override
     public UpdaterBuilder remoteApkUrl(String apkUrl) {
         mUpdaterSetting.setRemoteApkUri(Uri.parse(Utils.checkNullOrEmpty(apkUrl)));
+        return this;
+    }
+
+    @Override
+    public UpdaterBuilder updateDesc(String desc) {
+        mUpdaterSetting.setUpdateDesc(desc);
         return this;
     }
 

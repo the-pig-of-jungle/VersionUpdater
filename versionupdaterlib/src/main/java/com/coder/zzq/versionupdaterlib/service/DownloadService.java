@@ -6,7 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.coder.zzq.smartshow.toast.SmartToast;
 import com.coder.zzq.versionupdaterlib.MessageSender;
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
 import com.coder.zzq.versionupdaterlib.bean.DownloadFileInfo;
@@ -61,8 +63,11 @@ public class DownloadService extends IntentService {
                             break;
                     }
                 case DownloadManager.STATUS_SUCCESSFUL:
-                    File file = new File(downloadFileInfo.getUri().getEncodedPath());
+
+                    File file = new File(downloadFileInfo.getUri().getPath());
+
                     if (file.exists() && file.length() == downloadFileInfo.getFileSizeBytes()) {
+
                         Utils.installApk(this,downloadFileInfo.getUri());
                     } else {
                         downloadAgain(updaterSetting, downloadInfo);
@@ -96,6 +101,8 @@ public class DownloadService extends IntentService {
         long downloadId = Utils.getDownloadManager(this).enqueue(request);
         downloadInfo.setDownloadId(downloadId).setVersionCode(updaterSetting.getRemoteVersionCode());
         LastDownloadInfo.store(this,downloadInfo);
+
+        MessageSender.sendMsg(new DownloadEvent(DownloadEvent.AFTER_DOWNLOAD_HAS_STARTED,updaterSetting));
     }
 
 

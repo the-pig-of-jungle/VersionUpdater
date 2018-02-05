@@ -17,11 +17,13 @@ import static com.coder.zzq.versionupdaterlib.bean.LastDownloadInfo.fetch;
 public class DownloadEvent {
 
     public static final int BEFORE_NEW_VERSION_DOWNLOAD = 1;
-    public static final int LOCAL_VERSION_UP_TO_DATE = 2;
-    public static final int DOWNLOAD_IN_PROGRESS = 3;
-    public static final int DOWNLOAD_PAUSED = 4;
-    public static final int DOWNLOAD_FAILED = 5;
-    public static final int DOWNLOAD_COMPLETE = 6;
+    public static final int AFTER_DOWNLOAD_HAS_STARTED = 2;
+    public static final int LOCAL_VERSION_UP_TO_DATE = 3;
+    public static final int DOWNLOAD_IN_PROGRESS = 4;
+    public static final int DOWNLOAD_PAUSED = 5;
+    public static final int DOWNLOAD_FAILED = 6;
+    public static final int DOWNLOAD_COMPLETE = 7;
+
 
     private int mEvent;
 
@@ -58,11 +60,11 @@ public class DownloadEvent {
         }
     }
 
-    public int getEvent() {
+    public int getEventType() {
         return mEvent;
     }
 
-    public void setEvent(int event) {
+    public void setEventType(int event) {
         mEvent = event;
     }
 
@@ -70,8 +72,13 @@ public class DownloadEvent {
     public void delayUpdate(Context context) {
         if (mUpdaterSetting != null && !mUpdaterSetting.isForceUpdate()
                 && mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_AUTO) {
-            LastDownloadInfo downloadInfo = LastDownloadInfo.fetch(context).setDelayUpdate(true);
-            LastDownloadInfo.store(context,downloadInfo);
+            LastDownloadInfo downloadInfo = LastDownloadInfo.fetch(context);
+            if (downloadInfo == null) {
+                downloadInfo = new LastDownloadInfo();
+                downloadInfo.setVersionCode(mUpdaterSetting.getRemoteVersionCode());
+            }
+            downloadInfo.setDelayUpdate(true);
+            LastDownloadInfo.store(context, downloadInfo);
         }
     }
 
@@ -90,5 +97,16 @@ public class DownloadEvent {
         }
     }
 
+    public String getNewVersionName() {
+        return mUpdaterSetting == null ? "" : mUpdaterSetting.getRemoteVersionName();
+    }
+
+    public boolean isForceUpdate() {
+        return mUpdaterSetting == null ? false : mUpdaterSetting.isForceUpdate();
+    }
+
+    public String getUpdateDesc() {
+        return mUpdaterSetting == null ? "" : mUpdaterSetting.getUpdateDesc();
+    }
 
 }

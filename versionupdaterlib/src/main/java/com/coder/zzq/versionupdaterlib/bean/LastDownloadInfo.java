@@ -116,4 +116,8 @@ public class LastDownloadInfo {
         mVersionCode = 0;
         mDelayUpdate = false;
     }
+
+    public static boolean isDelayUpdate(LastDownloadInfo downloadInfo) {
+        return downloadInfo == null ? false : downloadInfo.isDelayUpdate();
+    }
 }
