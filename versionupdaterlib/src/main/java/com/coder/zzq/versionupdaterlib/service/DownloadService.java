@@ -26,7 +26,6 @@ import static com.coder.zzq.versionupdaterlib.util.Utils.getInfoOfDownloadFile;
 public class DownloadService extends IntentService {
     public static final String UPDATER_SETTING = "updater_setting";
 
-
     public DownloadService() {
         super("DownloadApkService");
     }
