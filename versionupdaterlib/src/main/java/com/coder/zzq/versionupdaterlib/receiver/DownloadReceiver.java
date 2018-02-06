@@ -5,7 +5,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.coder.zzq.smartshow.toast.SmartToast;
 import com.coder.zzq.versionupdaterlib.MessageSender;
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
 import com.coder.zzq.versionupdaterlib.bean.DownloadFileInfo;
@@ -19,7 +18,6 @@ import com.coder.zzq.versionupdaterlib.util.Utils;
 public class DownloadReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        SmartToast.plainToast(context);
         switch (intent.getAction()) {
             case DownloadManager.ACTION_DOWNLOAD_COMPLETE:
                 long downloadId = intent.getExtras().getLong(DownloadManager.EXTRA_DOWNLOAD_ID);

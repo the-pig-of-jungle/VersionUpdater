@@ -20,7 +20,6 @@ public class DownloadEvent {
     public static final int DOWNLOAD_PAUSED = 5;
     public static final int DOWNLOAD_FAILED = 6;
     public static final int DOWNLOAD_COMPLETE = 7;
-    public static final int DOWNLOAD_PROGRESS = 8;
 
 
     private int mEvent;
@@ -57,10 +56,6 @@ public class DownloadEvent {
                 mDownloadFailedReason = reason;
                 break;
         }
-    }
-
-    public DownloadEvent(int event, DownloadFileInfo downloadFileInfo) {
-        mDownloadFileInfo = Utils.checkNull(downloadFileInfo,"参数DownloadFileInfo不可为null！");
     }
 
 
