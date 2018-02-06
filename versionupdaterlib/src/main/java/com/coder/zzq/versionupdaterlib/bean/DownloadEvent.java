@@ -3,11 +3,8 @@ package com.coder.zzq.versionupdaterlib.bean;
 import android.content.Context;
 import android.net.Uri;
 
-import com.coder.zzq.versionupdaterlib.MessageSender;
 import com.coder.zzq.versionupdaterlib.service.DownloadService;
 import com.coder.zzq.versionupdaterlib.util.Utils;
-
-import static com.coder.zzq.versionupdaterlib.bean.LastDownloadInfo.fetch;
 
 
 /**
@@ -23,12 +20,14 @@ public class DownloadEvent {
     public static final int DOWNLOAD_PAUSED = 5;
     public static final int DOWNLOAD_FAILED = 6;
     public static final int DOWNLOAD_COMPLETE = 7;
+    public static final int DOWNLOAD_PROGRESS = 8;
 
 
     private int mEvent;
 
     private UpdaterSetting mUpdaterSetting;
     private Uri mLocalApkFileUri;
+    private DownloadFileInfo mDownloadFileInfo;
     private int mDownloadPausedReason;
     private int mDownloadFailedReason;
 
@@ -59,6 +58,11 @@ public class DownloadEvent {
                 break;
         }
     }
+
+    public DownloadEvent(int event, DownloadFileInfo downloadFileInfo) {
+        mDownloadFileInfo = Utils.checkNull(downloadFileInfo,"参数DownloadFileInfo不可为null！");
+    }
+
 
     public int getEventType() {
         return mEvent;

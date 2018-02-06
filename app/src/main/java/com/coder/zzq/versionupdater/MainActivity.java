@@ -10,19 +10,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import com.coder.zzq.smartshow.snackbar.SmartSnackbar;
 import com.coder.zzq.smartshow.toast.SmartToast;
-
 import com.coder.zzq.versionupdaterlib.EventProcessor;
-import com.coder.zzq.versionupdaterlib.MessageSender;
 import com.coder.zzq.versionupdaterlib.VersionUpdater;
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
 import com.coder.zzq.versionupdaterlib.bean.UpdaterSetting;
-import com.coder.zzq.versionupdaterlib.util.Utils;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -63,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
 //                    .isForceUpdate(true)
                     .detectMode(UpdaterSetting.DETECT_MODE_MANUAL)
                     .savedApkName("配送员")
+                    .needNotifiedProgress(true)
                     .build()
                     .check();
         }
@@ -133,8 +129,18 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void downloadComplete(Activity activity, DownloadEvent downloadEvent) {
-
+            public void downloadComplete(final Activity activity, final DownloadEvent downloadEvent) {
+                new AlertDialog.Builder(activity)
+                        .setMessage("下载已完成，是否安装？")
+                        .setPositiveButton("安装", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                downloadEvent.installAfterDownloadComplete(activity);
+                            }
+                        })
+                        .setNegativeButton("取消",null)
+                        .create()
+                        .show();
             }
 
             @Override

@@ -6,9 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
-import com.coder.zzq.smartshow.toast.SmartToast;
 import com.coder.zzq.versionupdaterlib.MessageSender;
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
 import com.coder.zzq.versionupdaterlib.bean.DownloadFileInfo;
@@ -18,6 +16,8 @@ import com.coder.zzq.versionupdaterlib.util.Utils;
 
 import java.io.File;
 import java.util.Date;
+
+import static com.coder.zzq.versionupdaterlib.util.Utils.getInfoOfDownloadFile;
 
 /**
  * Created by 朱志强 on 2018/1/27.
@@ -39,7 +39,7 @@ public class DownloadService extends IntentService {
         LastDownloadInfo downloadInfo = LastDownloadInfo.fetch(this);
 
         if (downloadInfo != null && downloadInfo.getVersionCode() == updaterSetting.getRemoteVersionCode()) {
-            DownloadFileInfo downloadFileInfo = Utils.getInfoOfDownloadFile(this, downloadInfo.getDownloadId());
+            DownloadFileInfo downloadFileInfo = getInfoOfDownloadFile(this, downloadInfo.getDownloadId());
             switch (downloadFileInfo.getDownloadStatus()) {
                 case DownloadManager.STATUS_PENDING:
                 case DownloadManager.STATUS_RUNNING:
@@ -68,7 +68,7 @@ public class DownloadService extends IntentService {
 
                     if (file.exists() && file.length() == downloadFileInfo.getFileSizeBytes()) {
 
-                        Utils.installApk(this,downloadFileInfo.getUri());
+                        Utils.installApk(this, downloadFileInfo.getUri());
                     } else {
                         downloadAgain(updaterSetting, downloadInfo);
                     }
@@ -83,12 +83,12 @@ public class DownloadService extends IntentService {
         }
     }
 
-    private void downloadAgain(UpdaterSetting updaterSetting, LastDownloadInfo downloadInfo) {
+    private void downloadAgain(final UpdaterSetting updaterSetting, LastDownloadInfo downloadInfo) {
 
         if (downloadInfo != null) {
             Utils.getDownloadManager(this).remove(downloadInfo.getDownloadId());
             downloadInfo.reset();
-        }else {
+        } else {
             downloadInfo = new LastDownloadInfo();
         }
 
@@ -98,11 +98,12 @@ public class DownloadService extends IntentService {
                 .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, updaterSetting.getSavedApkName())
                 .setNotificationVisibility(updaterSetting.getNotificationVisibilityMode())
                 .setTitle(updaterSetting.getNotificationTitle());
-        long downloadId = Utils.getDownloadManager(this).enqueue(request);
+        final long downloadId = Utils.getDownloadManager(this).enqueue(request);
         downloadInfo.setDownloadId(downloadId).setVersionCode(updaterSetting.getRemoteVersionCode());
-        LastDownloadInfo.store(this,downloadInfo);
+        LastDownloadInfo.store(this, downloadInfo);
 
-        MessageSender.sendMsg(new DownloadEvent(DownloadEvent.AFTER_DOWNLOAD_HAS_STARTED,updaterSetting));
+        MessageSender.sendMsg(new DownloadEvent(DownloadEvent.AFTER_DOWNLOAD_HAS_STARTED, updaterSetting));
+
     }
 
 
