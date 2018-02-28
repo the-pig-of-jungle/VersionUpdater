@@ -3,9 +3,12 @@ package com.coder.zzq.versionupdater;
 import android.Manifest;
 import android.app.Activity;
 import android.app.DownloadManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -21,7 +24,6 @@ import com.coder.zzq.versionupdaterlib.bean.UpdaterSetting;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
 
 
 public class MainActivity extends AppCompatActivity {
@@ -58,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 //                    .isForceUpdate(true)
                     .detectMode(UpdaterSetting.DETECT_MODE_MANUAL)
                     .savedApkName("配送员")
-                    .needNotifiedProgress(true)
+
                     .build()
                     .check();
         }
@@ -82,9 +84,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onGetClick(View view) {
-
+        //获取DownloadManager对象
+        DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
+        //构造apk下载地址的Uri对象
+        Uri apkUri = Uri.parse("http://xxxxxxxx/AppFolders/20180203/PPGSender_v1.0.1.apk");
+        //创建一个下载任务
+        DownloadManager.Request request = new DownloadManager.Request(apkUri)
+                //设置文件的保存位置
+                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "PPGSender_v1.0.1.apk")
+                //下载时，状态栏会出现一个通知条，设置其展示模式
+                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                //设置通知条的标题
+                .setTitle("配送员");
+        //将下载任务加入执行队列，返回唯一id，标识该任务，用于之后进行查询操作等
+        final long downloadId = downloadManager.enqueue(request);
     }
-
 
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
@@ -108,14 +122,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }).setCancelable(downloadEvent.isForceUpdate());
 
-                if (!downloadEvent.isForceUpdate()) {
-                    builder.setNegativeButton("暂不更新", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            downloadEvent.delayUpdate(activity);
-                        }
-                    });
-                }
 
                 AlertDialog dialog = builder.create();
                 dialog.setCanceledOnTouchOutside(false);
@@ -138,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                                 downloadEvent.installAfterDownloadComplete(activity);
                             }
                         })
-                        .setNegativeButton("取消",null)
+                        .setNegativeButton("取消", null)
                         .create()
                         .show();
             }

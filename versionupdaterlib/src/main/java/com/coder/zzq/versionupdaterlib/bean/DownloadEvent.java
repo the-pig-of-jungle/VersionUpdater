@@ -3,7 +3,6 @@ package com.coder.zzq.versionupdaterlib.bean;
 import android.content.Context;
 import android.net.Uri;
 
-import com.coder.zzq.versionupdaterlib.service.DownloadService;
 import com.coder.zzq.versionupdaterlib.util.Utils;
 
 
@@ -26,7 +25,7 @@ public class DownloadEvent {
 
     private UpdaterSetting mUpdaterSetting;
     private Uri mLocalApkFileUri;
-    private DownloadFileInfo mDownloadFileInfo;
+    private DownloadedFileInfo mDownloadFileInfo;
     private int mDownloadPausedReason;
     private int mDownloadFailedReason;
 
@@ -68,22 +67,10 @@ public class DownloadEvent {
     }
 
 
-    public void delayUpdate(Context context) {
-        if (mUpdaterSetting != null && !mUpdaterSetting.isForceUpdate()
-                && mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_AUTO) {
-            LastDownloadInfo downloadInfo = LastDownloadInfo.fetch(context);
-            if (downloadInfo == null) {
-                downloadInfo = new LastDownloadInfo();
-                downloadInfo.setVersionCode(mUpdaterSetting.getRemoteVersionCode());
-            }
-            downloadInfo.setDelayUpdate(true);
-            LastDownloadInfo.store(context, downloadInfo);
-        }
-    }
 
     public void updateImmediately(Context context) {
         if (context != null && mUpdaterSetting != null) {
-            DownloadService.start(context, mUpdaterSetting);
+//            DownloadService.start(context, mUpdaterSetting);
             mUpdaterSetting = null;
         }
     }

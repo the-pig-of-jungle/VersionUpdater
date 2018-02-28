@@ -6,7 +6,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
-import com.coder.zzq.versionupdaterlib.bean.LastDownloadInfo;
+
 import com.coder.zzq.versionupdaterlib.bean.UpdaterSetting;
 import com.coder.zzq.versionupdaterlib.listener.ActivityCallback;
 import com.coder.zzq.versionupdaterlib.util.Utils;
@@ -60,13 +60,13 @@ public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
     public void check() {
 
         mUpdaterSetting.settingCheck();
-        LastDownloadInfo downloadInfo = LastDownloadInfo.fetch(mAppContext);
+//        LastDownloadInfo downloadInfo = LastDownloadInfo.fetch(mAppContext);
         if (mUpdaterSetting.isLocalVersionUpToDate()) {
             if (mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_MANUAL) {
-                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE,mUpdaterSetting));
+                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE, mUpdaterSetting));
             }
-        } else if (mUpdaterSetting.isForceUpdate() || mUpdaterSetting.getDetectMode()== UpdaterSetting.DETECT_MODE_MANUAL ||!LastDownloadInfo.isDelayUpdate(downloadInfo)) {
-            MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD,mUpdaterSetting));
+        } else if (mUpdaterSetting.isForceUpdate() || mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_MANUAL) {
+            MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD, mUpdaterSetting));
         }
 
     }
@@ -119,7 +119,6 @@ public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
             default:
                 mUpdaterSetting.setNotificationVisibilityMode(visibilityMode);
                 break;
-
         }
 
         return this;
@@ -131,11 +130,6 @@ public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
         return this;
     }
 
-    @Override
-    public UpdaterBuilder needNotifiedProgress(boolean need) {
-        mUpdaterSetting.setNeedNotifiedProgress(need);
-        return this;
-    }
 
     @Override
     public UpdaterBuilder savedApkName(String apkName) {

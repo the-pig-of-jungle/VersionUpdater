@@ -20,8 +20,6 @@ public interface UpdaterBuilder {
 
     UpdaterBuilder notificationTitle(String title);
 
-    UpdaterBuilder needNotifiedProgress(boolean need);
-
     UpdaterBuilder savedApkName(String apkName);
 
     UpdaterBuilder detectMode(int detectMode);

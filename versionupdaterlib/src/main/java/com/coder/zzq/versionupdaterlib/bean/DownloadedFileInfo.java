@@ -3,10 +3,10 @@ package com.coder.zzq.versionupdaterlib.bean;
 import android.net.Uri;
 
 /**
- * Created by pig on 2018/1/26.
+ * Created by 喜欢、陪你看风景 on 2018/2/14.
  */
 
-public class DownloadFileInfo{
+public class DownloadedFileInfo {
 
     public static final int STATUS_NO_EXISTS = 0;
 
@@ -15,7 +15,7 @@ public class DownloadFileInfo{
     private int mDownloadStatus;
     private int mReason;
 
-    public DownloadFileInfo() {
+    public DownloadedFileInfo() {
 
     }
 

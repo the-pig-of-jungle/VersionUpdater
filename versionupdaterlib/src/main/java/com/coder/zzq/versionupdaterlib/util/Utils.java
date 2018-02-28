@@ -12,8 +12,8 @@ import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
 import com.coder.zzq.versionupdaterlib.BuildConfig;
-import com.coder.zzq.versionupdaterlib.bean.DownloadFileInfo;
-import com.coder.zzq.versionupdaterlib.bean.LastDownloadInfo;
+import com.coder.zzq.versionupdaterlib.bean.DownloadedFileInfo;
+import com.coder.zzq.versionupdaterlib.bean.LocalDownloadInfo;
 
 import java.io.File;
 
@@ -27,11 +27,11 @@ public class Utils {
         return (DownloadManager) context.getApplicationContext().getSystemService(Context.DOWNLOAD_SERVICE);
     }
 
-    public static DownloadFileInfo getInfoOfDownloadFile(Context context, long downloadId) {
+    public static DownloadedFileInfo getInfoOfDownloadFile(Context context, long downloadId) {
 
         DownloadManager downloadManager = getDownloadManager(context);
 
-        DownloadFileInfo downloadFileInfo = new DownloadFileInfo();
+        DownloadedFileInfo downloadFileInfo = new DownloadedFileInfo();
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterById(downloadId);
         Cursor cursor = downloadManager.query(query);
@@ -84,16 +84,13 @@ public class Utils {
         return str;
     }
 
-    public static  <T> T checkNull(T obj,String errorTip){
-        if (obj == null){
+    public static <T> T checkNull(T obj, String errorTip) {
+        if (obj == null) {
             throw new IllegalArgumentException(errorTip);
         }
 
         return obj;
     }
-
-
-
 
 
     public static int localVersionCode(Context context) {
@@ -104,12 +101,28 @@ public class Utils {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
-
         return versionCode;
     }
 
 
+    public static final String DOWNLOAD_INFO_PREF = "download_info_pref";
+    public static final String ITEM_DOWNLOAD_INFO = "download_info";
 
+    private static SharedPreferences downloadInfoPref(Context context) {
+        return context.getSharedPreferences(DOWNLOAD_INFO_PREF, Context.MODE_PRIVATE);
+    }
 
+    public static LocalDownloadInfo getLocalDownloadInfo(Context context) {
+        String jsonStr = downloadInfoPref(context).getString(ITEM_DOWNLOAD_INFO, null);
+        return jsonStr == null ? null : new LocalDownloadInfo(jsonStr);
+    }
 
+    public static void storeDownloadInfoIntoLocal(Context context, LocalDownloadInfo localDownloadInfo) {
+        downloadInfoPref(context).edit().putString(ITEM_DOWNLOAD_INFO,
+                localDownloadInfo == null ? null : localDownloadInfo.toString()).commit();
+    }
+
+    public static void clearLocalDownloadInfo(Context context) {
+        storeDownloadInfoIntoLocal(context, null);
+    }
 }
