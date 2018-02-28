@@ -4,3 +4,20 @@ APP版本更新器，将app版本升级中的通用逻辑与具体的UI展示剥
 感谢您的支持！<br/>
 微信：w361281607<br/>
 邮箱：coder_zzq@163.com<br/>
+## 添加依赖
+1.在Project的gradle文件中<br/>
+<pre><code>
+allprojects {
+
+    repositories {
+
+        ...
+
+        maven { url 'https://jitpack.io' }
+
+    }
+
+}
+</code></pre>
+2.在Module的grable文件中<br/>
+
