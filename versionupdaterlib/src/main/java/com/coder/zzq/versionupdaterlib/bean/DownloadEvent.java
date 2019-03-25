@@ -1,9 +1,13 @@
 package com.coder.zzq.versionupdaterlib.bean;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 
+import com.coder.zzq.versionupdaterlib.service.DownloadService;
 import com.coder.zzq.versionupdaterlib.util.Utils;
+
+import static com.coder.zzq.versionupdaterlib.service.DownloadService.UPDATER_SETTING;
 
 
 /**
@@ -70,7 +74,9 @@ public class DownloadEvent {
 
     public void updateImmediately(Context context) {
         if (context != null && mUpdaterSetting != null) {
-//            DownloadService.start(context, mUpdaterSetting);
+            Intent intent = new Intent(context,DownloadService.class);
+            intent.putExtra(UPDATER_SETTING,mUpdaterSetting);
+            context.startService(intent);
             mUpdaterSetting = null;
         }
     }

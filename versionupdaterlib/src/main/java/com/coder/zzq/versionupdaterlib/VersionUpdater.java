@@ -60,7 +60,6 @@ public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
     public void check() {
 
         mUpdaterSetting.settingCheck();
-//        LastDownloadInfo downloadInfo = LastDownloadInfo.fetch(mAppContext);
         if (mUpdaterSetting.isLocalVersionUpToDate()) {
             if (mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_MANUAL) {
                 MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE, mUpdaterSetting));

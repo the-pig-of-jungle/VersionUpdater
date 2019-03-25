@@ -66,79 +66,7 @@ public class DownloadService extends IntentService {
         }
     }
 
-    //    @Override
-//    protected void onHandleIntent(@Nullable Intent intent) {
-//
-//        UpdaterSetting updaterSetting = intent.getParcelableExtra(UPDATER_SETTING);
-//
-//        LastDownloadInfo lastDownloadInfo = LastDownloadInfo.fetch(this);
-//
-//        if (lastDownloadInfo == null || updaterSetting.getRemoteVersionCode() != lastDownloadInfo.getVersionCode()) {
-//            LastDownloadInfo.clear(this);
-//            download(updaterSetting,lastDownloadInfo);
-//            return;
-//        }
-//
-//        DownloadFileInfo downloadFileInfo = Utils.getInfoOfDownloadFile(this,lastDownloadInfo.getDownloadId());
-//
-//        switch (updaterSetting.getDetectMode()) {
-//            case UpdaterSetting.DETECT_MODE_AUTO:
-//                processAutoDetect(updaterSetting, downloadFileInfo);
-//                break;
-//            case UpdaterSetting.DETECT_MODE_MANUAL:
-//
-//                break;
-//        }
-//
-//        if (lastDownloadInfo != null && lastDownloadInfo.getVersionCode() == updaterSetting.getRemoteVersionCode()) {
-//
-//            switch (downloadFileInfo.getDownloadStatus()) {
-//                case DownloadManager.STATUS_PENDING:
-//                case DownloadManager.STATUS_RUNNING:
-//                    MessageSender.sendMsg(new DownloadEvent(DownloadEvent.DOWNLOAD_IN_PROGRESS));
-//                    break;
-//                case DownloadManager.STATUS_PAUSED:
-//                    MessageSender.sendMsg(new DownloadEvent(DownloadEvent.DOWNLOAD_PAUSED, downloadFileInfo.getReason()));
-//                    break;
-//                case DownloadManager.STATUS_FAILED:
-//                    switch (downloadFileInfo.getReason()) {
-//                        case DownloadManager.ERROR_DEVICE_NOT_FOUND:
-//                        case DownloadManager.ERROR_INSUFFICIENT_SPACE:
-//                            MessageSender.sendMsg(new DownloadEvent(DownloadEvent.DOWNLOAD_FAILED, downloadFileInfo.getReason()));
-//                            break;
-//                        case DownloadManager.ERROR_FILE_ALREADY_EXISTS:
-//                            updaterSetting.setSavedApkName(updaterSetting.getBaseApkName() + new Date().toString());
-//                            download(updaterSetting, lastDownloadInfo);
-//                            break;
-//                        default:
-//                            download(updaterSetting, lastDownloadInfo);
-//                            break;
-//                    }
-//                case DownloadManager.STATUS_SUCCESSFUL:
-//
-//                    File file = new File(downloadFileInfo.getUri().getPath());
-//
-//                    if (file.exists() && file.length() == downloadFileInfo.getFileSizeBytes()) {
-//
-//                        Utils.installApk(this, downloadFileInfo.getUri());
-//                    } else {
-//                        download(updaterSetting, lastDownloadInfo);
-//                    }
-//                    break;
-//                case DownloadFileInfo.STATUS_NO_EXISTS:
-//                    download(updaterSetting, lastDownloadInfo);
-//                    break;
-//            }
-//
-//        } else {
-//            download(updaterSetting, lastDownloadInfo);
-//        }
-//    }
-//
-//    private void processAutoDetect(UpdaterSetting updaterSetting, DownloadFileInfo downloadFileInfo) {
-//
-//    }
-//
+
     private void download(UpdaterSetting updaterSetting, LocalDownloadInfo localDownloadInfo) {
 
         if (localDownloadInfo != null) {
@@ -160,11 +88,4 @@ public class DownloadService extends IntentService {
         MessageSender.sendMsg(new DownloadEvent(DownloadEvent.AFTER_DOWNLOAD_HAS_STARTED, updaterSetting));
 
     }
-//
-//
-//    public static void start(Context context, UpdaterSetting updaterSetting) {
-//        Intent intent = new Intent(context, DownloadService.class);
-//        intent.putExtra(UPDATER_SETTING, updaterSetting);
-//        context.startService(intent);
-//    }
 }

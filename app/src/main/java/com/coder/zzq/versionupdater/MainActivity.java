@@ -52,10 +52,10 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, mPermission, 1);
         } else {
             VersionUpdater.builder(this)
-                    .remoteVersionCode(2)
+                    .remoteVersionCode(3)
                     .remoteVersionName("3.7.1")
                     .updateDesc("我愛你")
-                    .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180203/ps_2.8.3.apk")
+                    .remoteApkUrl("https://bxvip.oss-cn-zhangjiakou.aliyuncs.com/bxvip/androidapk/xunyingzy.apk")
                     .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 //                    .isForceUpdate(true)
                     .detectMode(UpdaterSetting.DETECT_MODE_MANUAL)
@@ -71,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         VersionUpdater.builder(this)
-                .remoteVersionCode(1)
+                .remoteVersionCode(3)
                 .remoteVersionName("3.7.1")
-                .remoteApkUrl("http://testmu.liinji.cn/AppFolders/20180127/ps_version_2.7.1.apk")
+                .remoteApkUrl("https://bxvip.oss-cn-zhangjiakou.aliyuncs.com/bxvip/androidapk/xunyingzy.apk")
                 .updateDesc("")
                 .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .notificationTitle("PP积配送员")
