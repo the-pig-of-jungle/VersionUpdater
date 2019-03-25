@@ -9,6 +9,8 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        buildConfigField 'String', 'FILE_PROVIDER_AUTHORITIES', '"com.coder.zzq.versionupdater.file_provider"'
+
     }
     buildTypes {
         release {

@@ -65,7 +65,7 @@ public class Utils {
 
     public static void installApk(Context context, Uri uri) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            uri = FileProvider.getUriForFile(context, BuildConfig.FILE_PROVIDER_AUTHORITIES, new File(uri.getPath()));
+            uri = FileProvider.getUriForFile(context, "", new File(uri.getPath()));
         }
         Intent intent = new Intent();
         intent.setAction(Intent.ACTION_VIEW)

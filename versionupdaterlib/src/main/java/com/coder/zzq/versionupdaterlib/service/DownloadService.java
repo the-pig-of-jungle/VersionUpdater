@@ -31,7 +31,7 @@ public class DownloadService extends IntentService {
         UpdaterSetting updaterSetting = intent.getParcelableExtra(UPDATER_SETTING);
         LocalDownloadInfo localDownloadInfo = Utils.getLocalDownloadInfo(this);
 
-        if (localDownloadInfo == null || localDownloadInfo.getVersionCode() != updaterSetting.getRemoteVersionCode()) {
+        if (true || localDownloadInfo == null || localDownloadInfo.getVersionCode() != updaterSetting.getRemoteVersionCode()) {
             download(updaterSetting, localDownloadInfo);
             return;
         }

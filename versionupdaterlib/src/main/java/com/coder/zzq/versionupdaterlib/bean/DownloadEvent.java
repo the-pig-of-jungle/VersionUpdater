@@ -101,4 +101,7 @@ public class DownloadEvent {
         return mUpdaterSetting == null ? "" : mUpdaterSetting.getUpdateDesc();
     }
 
+    public Uri getLocalApkFileUri() {
+        return mLocalApkFileUri;
+    }
 }
