@@ -15,8 +15,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
-
-import com.coder.zzq.smartshow.toast.SmartToast;
 import com.coder.zzq.versionupdaterlib.EventProcessor;
 import com.coder.zzq.versionupdaterlib.VersionUpdater;
 import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
@@ -38,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SmartToast.plainToast(this);
         mPermission = new String[]{
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE
@@ -47,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onDetectClick(View view) {
-        SmartToast.plainToast(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(this, mPermission, 1);
         } else {
@@ -106,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
         EventProcessor.create(this, downloadEvent).process(new EventProcessor.Callback() {
             @Override
             public void localVersionUpToDate(Activity activity, DownloadEvent downloadEvent) {
-                SmartToast.showInCenter("当前已为最新版本！");
+//                SmartToast.showInCenter("当前已为最新版本！");
             }
 
             @Override
@@ -131,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterDownloadHasStarted(final Activity activity, final DownloadEvent downloadEvent) {
-                SmartToast.showInCenter("已在后台下载新版本！");
+//                SmartToast.showInCenter("已在后台下载新版本！");
             }
 
             @Override
