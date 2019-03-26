@@ -79,6 +79,7 @@ public class DownloadService extends IntentService {
         DownloadManager.Request request = new DownloadManager.Request(updaterSetting.getRemoteApkUri())
                 .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, updaterSetting.getSavedApkName())
                 .setNotificationVisibility(updaterSetting.getNotificationVisibilityMode())
+                .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI)
                 .setTitle(updaterSetting.getNotificationTitle());
         final long downloadId = Utils.getDownloadManager(this).enqueue(request);
         localDownloadInfo.setDownloadId(downloadId).setVersionCode(updaterSetting.getRemoteVersionCode());
