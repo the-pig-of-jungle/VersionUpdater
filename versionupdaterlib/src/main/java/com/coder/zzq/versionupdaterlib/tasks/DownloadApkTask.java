@@ -59,13 +59,15 @@ public class DownloadApkTask implements Runnable {
                                     .notifyEvent(new DownloadRequestDuplicate());
                             return;
                     }
+
+                    if (UpdateUtil.isJobRunning(mDownloadTaskInfo.getRemoteVersionCode())) {
+                        return;
+                    }
                 }
             }
         }
 
-        if (UpdateUtil.isJobRunning(mDownloadTaskInfo.getRemoteVersionCode())) {
-            return;
-        }
+
 
         PersistableBundle extras = new PersistableBundle();
         extras.putString("download_task_info", mDownloadTaskInfo.toJson());
