@@ -68,13 +68,11 @@ public class DownloadApkTask implements Runnable {
         }
 
 
-
         PersistableBundle extras = new PersistableBundle();
         extras.putString("download_task_info", mDownloadTaskInfo.toJson());
         JobInfo jobInfo = new JobInfo.Builder(mDownloadTaskInfo.getRemoteVersionCode(), new ComponentName(Toolkit.getContext(), DownloadApkJobService.class))
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setExtras(extras)
-                .setPersisted(true)
                 .build();
 
         DownloadEventNotifier.get().notifyEvent(new DetectNewVersion(
