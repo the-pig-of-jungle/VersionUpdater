@@ -39,8 +39,4 @@ public class DownloadEventNotifier {
     public synchronized void unregisterReceiver(DownloadEventViewModel downloadEventViewModel) {
         mDownloadEventViewModels.remove(downloadEventViewModel);
     }
-
-    public boolean downloadTriggered() {
-        return false;
-    }
 }
