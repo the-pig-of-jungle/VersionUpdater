@@ -1,161 +1,136 @@
 package com.coder.zzq.versionupdaterlib;
 
-import android.app.Activity;
-import android.app.DownloadManager;
-import android.content.Context;
-import android.net.Uri;
+import android.app.Application;
+import android.os.Build;
 
-import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
+import androidx.annotation.RequiresApi;
 
-import com.coder.zzq.versionupdaterlib.bean.UpdaterSetting;
-import com.coder.zzq.versionupdaterlib.listener.ActivityCallback;
-import com.coder.zzq.versionupdaterlib.util.Utils;
-
-import static com.coder.zzq.versionupdaterlib.bean.UpdaterSetting.DETECT_MODE_AUTO;
-import static com.coder.zzq.versionupdaterlib.bean.UpdaterSetting.DETECT_MODE_MANUAL;
-
+import com.coder.zzq.toolkit.Toolkit;
+import com.coder.zzq.versionupdaterlib.bean.DownloadTaskInfo;
+import com.coder.zzq.versionupdaterlib.bean.download.event.LocalVersionIsUpToDate;
+import com.coder.zzq.versionupdaterlib.communication.DownloadEventNotifier;
+import com.coder.zzq.versionupdaterlib.communication.DownloadVersionInfoCache;
+import com.coder.zzq.versionupdaterlib.tasks.TaskScheduler;
+import com.coder.zzq.versionupdaterlib.util.UpdateUtil;
 
 /**
- * Created by 喜欢、陪你看风景 on 2018/1/31.
+ * Created by zhiqiang.zhu on 2018/1/31.
  */
 
-public class VersionUpdater implements UpdaterBuilder, IVersionUpdater {
+public class VersionUpdater implements IVersionUpdater {
+    private static VersionUpdater sVersionUpdater = new VersionUpdater();
 
-    private static boolean sHasInitMsgSender;
-
-    private Context mAppContext;
-    private UpdaterSetting mUpdaterSetting;
-
-
-    private VersionUpdater(Activity activity) {
-        mAppContext = activity.getApplicationContext();
-        initMessageSenderIfNotExists(activity);
-        mUpdaterSetting = new UpdaterSetting();
-        mUpdaterSetting.setLocalVersionCode(Utils.localVersionCode(activity));
-        mUpdaterSetting.setNotificationVisibilityMode(DownloadManager.Request.VISIBILITY_VISIBLE);
+    protected static IVersionUpdater create(DownloadTaskInfo downloadTaskInfo) {
+        return sVersionUpdater.setDownloadTaskInfo(downloadTaskInfo);
     }
 
+    private DownloadTaskInfo mDownloadTaskInfo;
 
-    private void initMessageSenderIfNotExists(Activity activity) {
-
-        if (!sHasInitMsgSender) {
-            if (!MessageSender.isRegister(activity)) {
-                MessageSender.register(activity);
-            }
-            activity.getApplication().registerActivityLifecycleCallbacks(new ActivityCallback());
-            sHasInitMsgSender = true;
-        }
+    private VersionUpdater() {
 
     }
 
+    private VersionUpdater setDownloadTaskInfo(DownloadTaskInfo downloadTaskInfo) {
+        mDownloadTaskInfo = downloadTaskInfo;
+        return this;
+    }
 
-    public static UpdaterBuilder builder(Activity activity) {
-
-        return new VersionUpdater(Utils.checkNull(activity, "参数activity不可为null！"));
-
+    public static IUpdaterBuilder builder(Application application) {
+        Toolkit.init(application);
+        return new UpdateBuilder();
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void check() {
 
-        mUpdaterSetting.settingCheck();
-        if (mUpdaterSetting.isLocalVersionUpToDate()) {
-            if (mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_MANUAL) {
-                MessageSender.sendMsg(new DownloadEvent(DownloadEvent.LOCAL_VERSION_UP_TO_DATE, mUpdaterSetting));
+        if (mDownloadTaskInfo.getRemoteVersionCode() <= UpdateUtil.getVersionCode()) {
+            if (mDownloadTaskInfo.getDetectMode() == DownloadTaskInfo.DETECT_MODE_MANUAL) {
+                DownloadEventNotifier.get().notifyEvent(new LocalVersionIsUpToDate());
             }
-        } else if (mUpdaterSetting.isForceUpdate() || mUpdaterSetting.getDetectMode() == UpdaterSetting.DETECT_MODE_MANUAL) {
-            MessageSender.sendMsg(new DownloadEvent(DownloadEvent.BEFORE_NEW_VERSION_DOWNLOAD, mUpdaterSetting));
+            if (DownloadVersionInfoCache.getDownloadVersionCodeFromCache() != 0) {
+                TaskScheduler.cleanApkFile();
+            }
+            return;
+        }
+
+        TaskScheduler.downloadApk(mDownloadTaskInfo);
+    }
+
+
+    public interface IUpdaterBuilder {
+
+        IUpdaterBuilder remoteVersionCode(int versionCode);
+
+        IUpdaterBuilder remoteVersionName(String versionName);
+
+        IUpdaterBuilder remoteApkUrl(String apkUrl);
+
+        IUpdaterBuilder remoteVersionDesc(String desc);
+
+        IUpdaterBuilder forceUpdate(boolean forceUpdate);
+
+        IUpdaterBuilder notificationVisibility(boolean visible);
+
+        IUpdaterBuilder detectMode(int detectMode);
+
+        IVersionUpdater build();
+    }
+
+    public static class UpdateBuilder implements IUpdaterBuilder {
+        private DownloadTaskInfo mDownloadTaskInfo;
+
+        private UpdateBuilder() {
+            mDownloadTaskInfo = new DownloadTaskInfo();
+        }
+
+        public IUpdaterBuilder remoteVersionCode(int versionCode) {
+            mDownloadTaskInfo.setRemoteVersionCode(versionCode);
+            return this;
+        }
+
+        @Override
+        public IUpdaterBuilder remoteVersionName(String versionName) {
+            mDownloadTaskInfo.setRemoteVersionName(versionName);
+            return this;
+        }
+
+        @Override
+        public IUpdaterBuilder remoteApkUrl(String apkUrl) {
+            mDownloadTaskInfo.setRemoteApkUrl(apkUrl);
+            return this;
+        }
+
+        @Override
+        public IUpdaterBuilder remoteVersionDesc(String desc) {
+            mDownloadTaskInfo.setRemoteVersionDesc(desc);
+            return this;
+        }
+
+        @Override
+        public IUpdaterBuilder forceUpdate(boolean forceUpdate) {
+            mDownloadTaskInfo.setForceUpdate(forceUpdate);
+            return this;
+        }
+
+        @Override
+        public IUpdaterBuilder notificationVisibility(boolean visible) {
+            mDownloadTaskInfo.setNotificationVisibility(visible);
+            return this;
+        }
+
+
+        @Override
+        public IUpdaterBuilder detectMode(int detectMode) {
+            mDownloadTaskInfo.setDetectMode(detectMode);
+            return this;
+        }
+
+        @Override
+        public IVersionUpdater build() {
+            return VersionUpdater.create(mDownloadTaskInfo);
         }
 
     }
-
-
-    @Override
-    public UpdaterBuilder remoteVersionCode(int versionCode) {
-        if (versionCode < 1) {
-            new IllegalArgumentException("版本号不可小于1");
-        }
-        mUpdaterSetting.setRemoteVersionCode(versionCode);
-        return this;
-    }
-
-
-    @Override
-    public UpdaterBuilder remoteVersionName(String versionName) {
-        mUpdaterSetting.setRemoteVersionName(Utils.checkNullOrEmpty(versionName));
-        return this;
-    }
-
-    @Override
-    public UpdaterBuilder remoteApkUrl(String apkUrl) {
-        mUpdaterSetting.setRemoteApkUri(Uri.parse(Utils.checkNullOrEmpty(apkUrl)));
-        return this;
-    }
-
-    @Override
-    public UpdaterBuilder updateDesc(String desc) {
-        mUpdaterSetting.setUpdateDesc(desc);
-        return this;
-    }
-
-    @Override
-    public UpdaterBuilder isForceUpdate(boolean forceUpdate) {
-        mUpdaterSetting.setForceUpdate(forceUpdate);
-        return this;
-    }
-
-    @Override
-    public UpdaterBuilder notificationVisibility(int visibilityMode) {
-        switch (visibilityMode) {
-
-            case DownloadManager.Request.VISIBILITY_VISIBLE:
-            case DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED:
-            case DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION:
-            case DownloadManager.Request.VISIBILITY_HIDDEN:
-                mUpdaterSetting.setNotificationVisibilityMode(visibilityMode);
-                break;
-            default:
-                mUpdaterSetting.setNotificationVisibilityMode(visibilityMode);
-                break;
-        }
-
-        return this;
-    }
-
-    @Override
-    public UpdaterBuilder notificationTitle(String title) {
-        mUpdaterSetting.setNotificationTitle(Utils.checkNullOrEmpty(title));
-        return this;
-    }
-
-
-    @Override
-    public UpdaterBuilder savedApkName(String apkName) {
-        mUpdaterSetting.setSavedApkName(Utils.checkNullOrEmpty(apkName));
-        return this;
-    }
-
-    @Override
-    public UpdaterBuilder detectMode(int detectMode) {
-        switch (detectMode) {
-            case DETECT_MODE_AUTO:
-                mUpdaterSetting.setDetectMode(DETECT_MODE_AUTO);
-                break;
-            case DETECT_MODE_MANUAL:
-                mUpdaterSetting.setDetectMode(DETECT_MODE_MANUAL);
-                break;
-            default:
-                mUpdaterSetting.setDetectMode(DETECT_MODE_MANUAL);
-        }
-
-        return this;
-
-    }
-
-    @Override
-    public IVersionUpdater build() {
-        return this;
-    }
-
 }
