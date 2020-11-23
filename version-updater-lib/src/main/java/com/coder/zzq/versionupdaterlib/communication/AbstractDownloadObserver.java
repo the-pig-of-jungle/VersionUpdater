@@ -13,24 +13,27 @@ import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadInProgress;
 import com.coder.zzq.versionupdaterlib.bean.download_event.NewVersionApkExists;
 import com.coder.zzq.versionupdaterlib.bean.download_trigger.DownloadTrigger;
 
+import java.lang.ref.WeakReference;
+
 public abstract class AbstractDownloadObserver implements Observer<DownloadEvent> {
 
-    private AppCompatActivity mAppCompatActivity;
+    private final WeakReference<AppCompatActivity> mAppCompatActivity;
 
     public AbstractDownloadObserver(AppCompatActivity appCompatActivity) {
-        mAppCompatActivity = appCompatActivity;
+
+        mAppCompatActivity = new WeakReference<>(appCompatActivity);
     }
 
     @Override
     public final void onChanged(DownloadEvent downloadEvent) {
         if (downloadEvent instanceof DetectNewVersion) {
-            onDetectNewVersion(mAppCompatActivity, ((DetectNewVersion) downloadEvent).getNewVersionInfo(), ((DetectNewVersion) downloadEvent).getDownloadTrigger());
+            onDetectNewVersion(mAppCompatActivity.get(), ((DetectNewVersion) downloadEvent).getNewVersionInfo(), ((DetectNewVersion) downloadEvent).getDownloadTrigger());
         } else if (downloadEvent instanceof DownloadInProgress) {
-            onDownloadProgressChanged(mAppCompatActivity, ((DownloadInProgress) downloadEvent).getDownloadProgress(), ((DownloadInProgress) downloadEvent).getApkInstaller());
+            onDownloadProgressChanged(mAppCompatActivity.get(), ((DownloadInProgress) downloadEvent).getDownloadProgress(), ((DownloadInProgress) downloadEvent).getApkInstaller());
         } else if (downloadEvent instanceof DownloadFailed) {
             onDownloadFailed(((DownloadFailed) downloadEvent).getFailedReason());
         } else if (downloadEvent instanceof NewVersionApkExists) {
-            onNewVersionApkExists(mAppCompatActivity, ((NewVersionApkExists) downloadEvent).getVersionInfo(), ((NewVersionApkExists) downloadEvent).getApkInstaller());
+            onNewVersionApkExists(mAppCompatActivity.get(), ((NewVersionApkExists) downloadEvent).getVersionInfo(), ((NewVersionApkExists) downloadEvent).getApkInstaller());
         }
     }
 
