@@ -1,35 +1,21 @@
 package com.coder.zzq.versionupdater;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.DownloadManager;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
-import com.coder.zzq.versionupdaterlib.BuildConfig;
-import com.coder.zzq.versionupdaterlib.EventProcessor;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.versionupdaterlib.VersionUpdater;
-import com.coder.zzq.versionupdaterlib.bean.DownloadEvent;
-import com.coder.zzq.versionupdaterlib.bean.UpdaterSetting;
-import com.coder.zzq.versionupdaterlib.util.Utils;
-
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
-
-import java.io.File;
+import com.coder.zzq.versionupdaterlib.bean.DownloadTaskInfo;
+import com.coder.zzq.versionupdaterlib.bean.download.event.DownloadEvent;
+import com.coder.zzq.versionupdaterlib.communication.DownloadEventViewModel;
+import com.coder.zzq.versionupdaterlib.communication.ManualDetectObserver;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -49,134 +35,37 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.READ_EXTERNAL_STORAGE
         };
         mEditText = (EditText) findViewById(R.id.edt_id);
-    }
-
-    public void onDetectClick(View view) {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-            ActivityCompat.requestPermissions(this, mPermission, 1);
-        } else {
-            VersionUpdater.builder(this)
-                    .remoteVersionCode(3)
-                    .remoteVersionName("3.7.1")
-                    .updateDesc("我愛你")
-                    .remoteApkUrl("https://bxvip.oss-cn-zhangjiakou.aliyuncs.com/bxvip/androidapk/xunyingzy.apk")
-                    .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-//                    .isForceUpdate(true)
-                    .detectMode(UpdaterSetting.DETECT_MODE_MANUAL)
-                    .savedApkName("配送员")
-
-                    .build()
-                    .check();
-        }
-
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        VersionUpdater.builder(this)
-                .remoteVersionCode(3)
-                .remoteVersionName("3.7.1")
-                .remoteApkUrl("https://bxvip.oss-cn-zhangjiakou.aliyuncs.com/bxvip/androidapk/xunyingzy.apk")
-                .updateDesc("")
-                .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .notificationTitle("PP积配送员")
-                .savedApkName("test.apk")
-                .detectMode(UpdaterSetting.DETECT_MODE_AUTO)
-                .build()
-                .check();
-    }
-
-    public void onGetClick(View view) {
-        //获取DownloadManager对象
-        DownloadManager downloadManager = (DownloadManager) getSystemService(Context.DOWNLOAD_SERVICE);
-        //构造apk下载地址的Uri对象
-        Uri apkUri = Uri.parse("http://xxxxxxxx/AppFolders/20180203/PPGSender_v1.0.1.apk");
-        //创建一个下载任务
-        DownloadManager.Request request = new DownloadManager.Request(apkUri)
-                //设置文件的保存位置
-                .setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "PPGSender_v1.0.1.apk")
-                //下载时，状态栏会出现一个通知条，设置其展示模式
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                //设置通知条的标题
-                .setTitle("配送员");
-        //将下载任务加入执行队列，返回唯一id，标识该任务，用于之后进行查询操作等
-        final long downloadId = downloadManager.enqueue(request);
-    }
-
-
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onReceiveDownloadEvent(final DownloadEvent downloadEvent) {
-        EventProcessor.create(this, downloadEvent).process(new EventProcessor.Callback() {
+        MutableLiveData<DownloadEvent> liveData = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory())
+                .get(DownloadEventViewModel.class)
+                .downloadEvent();
+        liveData.observe(this, new DownloadObserver(this));
+        liveData.observe(this, new ManualDetectObserver() {
             @Override
-            public void localVersionUpToDate(Activity activity, DownloadEvent downloadEvent) {
-//                SmartToast.showInCenter("当前已为最新版本！");
+            protected void onLocalVersionIsUpToDate() {
+                Toast.makeText(Toolkit.getContext(), "当前已是最新版本", Toast.LENGTH_LONG).show();
             }
 
             @Override
-            public void beforeNewVersionDownload(final Activity activity, final DownloadEvent downloadEvent) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(activity)
-                        .setTitle("发现新版本 v" + downloadEvent.getNewVersionName())
-                        .setMessage(downloadEvent.getUpdateDesc())
-                        .setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                                downloadEvent.updateImmediately(activity);
-                            }
-                        }).setCancelable(downloadEvent.isForceUpdate());
-
-
-                AlertDialog dialog = builder.create();
-                dialog.setCanceledOnTouchOutside(false);
-                dialog.show();
-
-            }
-
-            @Override
-            public void afterDownloadHasStarted(final Activity activity, final DownloadEvent downloadEvent) {
-//                SmartToast.showInCenter("已在后台下载新版本！");
-            }
-
-            @Override
-            public void downloadComplete(final Activity activity, final DownloadEvent downloadEvent) {
-                new AlertDialog.Builder(activity)
-                        .setMessage("下载已完成，是否安装？")
-                        .setPositiveButton("安装", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Uri uri = downloadEvent.getLocalApkFileUri();
-                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                                    uri = FileProvider.getUriForFile(MainActivity.this, "com.coder.zzq.versionupdater.file_provider", new File(uri.getPath()));
-                                }
-                                Intent intent = new Intent();
-                                intent.setAction(Intent.ACTION_VIEW)
-                                        .setDataAndType(uri, "application/vnd.android.package-archive")
-                                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                MainActivity.this.startActivity(intent);
-                            }
-                        })
-                        .setNegativeButton("取消", null)
-                        .create()
-                        .show();
-            }
-
-            @Override
-            public void downloadInProgress(Activity activity, DownloadEvent downloadEvent) {
-
-            }
-
-            @Override
-            public void downloadPaused(Activity activity, DownloadEvent downloadEvent) {
-
-            }
-
-            @Override
-            public void downloadFailed(Activity activity, DownloadEvent downloadEvent) {
-
+            protected void onDownloadRequestDuplicate() {
+                Toast.makeText(Toolkit.getContext(), "已在后台下载中...", Toast.LENGTH_LONG).show();
             }
         });
     }
 
 
+    public void onGetClick(View view) {
+
+        VersionUpdater.builder(getApplication())
+                .remoteVersionCode(2)
+                .remoteVersionName("3.7.1")
+                .remoteVersionDesc("我愛你")
+                .remoteApkUrl("https://bxvip.oss-cn-zhangjiakou.aliyuncs.com/bxvip/androidapk/xunyingzy.apk")
+//                .notificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+//                .isForceUpdate(true)
+//                .detectMode(UpdaterSetting.DETECT_MODE_MANUAL)
+//                .savedApkName("配送员")
+                .detectMode(DownloadTaskInfo.DETECT_MODE_MANUAL)
+                .build()
+                .check();
+    }
 }
