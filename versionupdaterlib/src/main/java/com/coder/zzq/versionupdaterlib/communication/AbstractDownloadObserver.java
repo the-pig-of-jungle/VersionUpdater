@@ -5,13 +5,13 @@ import androidx.lifecycle.Observer;
 
 import com.coder.zzq.versionupdaterlib.bean.ApkInstaller;
 import com.coder.zzq.versionupdaterlib.bean.DownloadProgress;
-import com.coder.zzq.versionupdaterlib.bean.DownloadTrigger;
 import com.coder.zzq.versionupdaterlib.bean.VersionInfo;
-import com.coder.zzq.versionupdaterlib.bean.download.event.DetectNewVersion;
-import com.coder.zzq.versionupdaterlib.bean.download.event.DownloadEvent;
-import com.coder.zzq.versionupdaterlib.bean.download.event.DownloadFailed;
-import com.coder.zzq.versionupdaterlib.bean.download.event.DownloadInProgress;
-import com.coder.zzq.versionupdaterlib.bean.download.event.NewVersionApkExists;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DetectNewVersion;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadEvent;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadFailed;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadInProgress;
+import com.coder.zzq.versionupdaterlib.bean.download_event.NewVersionApkExists;
+import com.coder.zzq.versionupdaterlib.bean.download_trigger.DownloadTrigger;
 
 public abstract class AbstractDownloadObserver implements Observer<DownloadEvent> {
 

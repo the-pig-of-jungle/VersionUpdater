@@ -2,9 +2,9 @@ package com.coder.zzq.versionupdaterlib.communication;
 
 import androidx.lifecycle.Observer;
 
-import com.coder.zzq.versionupdaterlib.bean.download.event.DownloadEvent;
-import com.coder.zzq.versionupdaterlib.bean.download.event.DownloadRequestDuplicate;
-import com.coder.zzq.versionupdaterlib.bean.download.event.LocalVersionIsUpToDate;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadEvent;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadRequestDuplicate;
+import com.coder.zzq.versionupdaterlib.bean.download_event.LocalVersionIsUpToDate;
 
 public abstract class ManualDetectObserver implements Observer<DownloadEvent> {
 

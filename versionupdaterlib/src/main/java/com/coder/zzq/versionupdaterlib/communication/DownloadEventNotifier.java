@@ -1,6 +1,6 @@
 package com.coder.zzq.versionupdaterlib.communication;
 
-import com.coder.zzq.versionupdaterlib.bean.download.event.DownloadEvent;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadEvent;
 
 import java.util.LinkedList;
 import java.util.List;
