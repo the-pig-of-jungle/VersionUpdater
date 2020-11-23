@@ -1,18 +1,14 @@
-package com.coder.zzq.versionupdaterlib.tasks;
+package com.coder.zzq.versionupdaterlib.tasks.query_progress;
 
 import android.app.DownloadManager;
-import android.app.job.JobScheduler;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import com.coder.zzq.versionupdaterlib.bean.DownloadProgress;
-import com.coder.zzq.versionupdaterlib.bean.DownloadTaskInfo;
-import com.coder.zzq.versionupdaterlib.bean.download.event.DownloadFailed;
-import com.coder.zzq.versionupdaterlib.bean.download.event.DownloadInProgress;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadFailed;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadInProgress;
 import com.coder.zzq.versionupdaterlib.communication.DownloadEventNotifier;
+import com.coder.zzq.versionupdaterlib.tasks.TaskScheduler;
 import com.coder.zzq.versionupdaterlib.util.UpdateUtil;
 
 import java.util.TimerTask;
@@ -21,22 +17,16 @@ import static android.app.DownloadManager.STATUS_FAILED;
 import static android.app.DownloadManager.STATUS_RUNNING;
 import static android.app.DownloadManager.STATUS_SUCCESSFUL;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class QueryProgressTask extends TimerTask {
+public abstract class QueryProgressTask extends TimerTask {
 
-    private final DownloadTaskInfo mDownloadTaskInfo;
     private final long mDownloadId;
-    private final int mJobId;
+
     private final DownloadManager mDownloadManager;
-    private final JobScheduler mJobScheduler;
 
 
-    public QueryProgressTask(int jobId, DownloadTaskInfo downloadTaskInfo, long downloadId) {
-        mDownloadTaskInfo = downloadTaskInfo;
-        mJobId = jobId;
+    public QueryProgressTask(long downloadId) {
         mDownloadId = downloadId;
         mDownloadManager = UpdateUtil.getDownloadManager();
-        mJobScheduler = UpdateUtil.getJobScheduler();
     }
 
 
@@ -69,7 +59,7 @@ public class QueryProgressTask extends TimerTask {
                                     DownloadEventNotifier.get().notifyEvent(new DownloadFailed(DownloadFailed.FAILED_REASON_INSUFFICIENT_SPACE));
                                     break;
                             }
-                            mJobScheduler.cancel(mJobId);
+                            cancelDownloadService();
                             mDownloadManager.remove(mDownloadId);
                             break;
                         case STATUS_SUCCESSFUL:
@@ -79,7 +69,7 @@ public class QueryProgressTask extends TimerTask {
                                             UpdateUtil.createApkInstaller(Uri.parse(uriStr), true)
                                     )
                             );
-                            mJobScheduler.cancel(mJobId);
+                            cancelDownloadService();
                             break;
                     }
 
@@ -91,4 +81,6 @@ public class QueryProgressTask extends TimerTask {
         }
 
     }
+
+    protected abstract void cancelDownloadService();
 }

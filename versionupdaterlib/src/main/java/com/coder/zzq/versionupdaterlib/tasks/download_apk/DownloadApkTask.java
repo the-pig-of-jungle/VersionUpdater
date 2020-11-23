@@ -1,32 +1,23 @@
-package com.coder.zzq.versionupdaterlib.tasks;
+package com.coder.zzq.versionupdaterlib.tasks.download_apk;
 
 import android.app.DownloadManager;
-import android.app.job.JobInfo;
-import android.content.ComponentName;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
-import android.os.PersistableBundle;
 
-import androidx.annotation.RequiresApi;
-
-import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.versionupdaterlib.bean.DownloadTaskInfo;
-import com.coder.zzq.versionupdaterlib.bean.DownloadTrigger;
-import com.coder.zzq.versionupdaterlib.bean.VersionInfo;
-import com.coder.zzq.versionupdaterlib.bean.download.event.DetectNewVersion;
-import com.coder.zzq.versionupdaterlib.bean.download.event.DownloadRequestDuplicate;
-import com.coder.zzq.versionupdaterlib.bean.download.event.NewVersionApkExists;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DetectNewVersion;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadRequestDuplicate;
+import com.coder.zzq.versionupdaterlib.bean.download_event.NewVersionApkExists;
+import com.coder.zzq.versionupdaterlib.bean.download_trigger.DownloadTrigger;
 import com.coder.zzq.versionupdaterlib.communication.DownloadEventNotifier;
 import com.coder.zzq.versionupdaterlib.communication.DownloadVersionInfoCache;
-import com.coder.zzq.versionupdaterlib.service.DownloadApkJobService;
 import com.coder.zzq.versionupdaterlib.util.UpdateUtil;
 
 import java.io.File;
 
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class DownloadApkTask implements Runnable {
-    private final DownloadTaskInfo mDownloadTaskInfo;
+
+public abstract class DownloadApkTask implements Runnable {
+    protected final DownloadTaskInfo mDownloadTaskInfo;
 
     public DownloadApkTask(DownloadTaskInfo downloadTaskInfo) {
         mDownloadTaskInfo = downloadTaskInfo;
@@ -59,28 +50,16 @@ public class DownloadApkTask implements Runnable {
                                     .notifyEvent(new DownloadRequestDuplicate());
                             return;
                     }
-
-                    if (UpdateUtil.isJobRunning(mDownloadTaskInfo.getRemoteVersionCode())) {
-                        return;
-                    }
                 }
             }
         }
 
 
-        PersistableBundle extras = new PersistableBundle();
-        extras.putString("download_task_info", mDownloadTaskInfo.toJson());
-        JobInfo jobInfo = new JobInfo.Builder(mDownloadTaskInfo.getRemoteVersionCode(), new ComponentName(Toolkit.getContext(), DownloadApkJobService.class))
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
-                .setExtras(extras)
-                .build();
-
         DownloadEventNotifier.get().notifyEvent(new DetectNewVersion(
-                new VersionInfo(mDownloadTaskInfo.getRemoteVersionCode(),
-                        mDownloadTaskInfo.getRemoteVersionName(),
-                        mDownloadTaskInfo.getRemoteVersionName(),
-                        mDownloadTaskInfo.isForceUpdate()),
-                new DownloadTrigger(jobInfo))
+                mDownloadTaskInfo.fetchBaseVersionInfo(),
+                createDownloadTrigger())
         );
     }
+
+    protected abstract DownloadTrigger createDownloadTrigger();
 }
