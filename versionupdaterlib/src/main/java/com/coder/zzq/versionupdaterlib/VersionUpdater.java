@@ -1,13 +1,10 @@
 package com.coder.zzq.versionupdaterlib;
 
 import android.app.Application;
-import android.os.Build;
-
-import androidx.annotation.RequiresApi;
 
 import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.versionupdaterlib.bean.DownloadTaskInfo;
-import com.coder.zzq.versionupdaterlib.bean.download.event.LocalVersionIsUpToDate;
+import com.coder.zzq.versionupdaterlib.bean.download_event.LocalVersionIsUpToDate;
 import com.coder.zzq.versionupdaterlib.communication.DownloadEventNotifier;
 import com.coder.zzq.versionupdaterlib.communication.DownloadVersionInfoCache;
 import com.coder.zzq.versionupdaterlib.tasks.TaskScheduler;
@@ -40,11 +37,8 @@ public class VersionUpdater implements IVersionUpdater {
         return new UpdateBuilder();
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void check() {
-
         if (mDownloadTaskInfo.getRemoteVersionCode() <= UpdateUtil.getVersionCode()) {
             if (mDownloadTaskInfo.getDetectMode() == DownloadTaskInfo.DETECT_MODE_MANUAL) {
                 DownloadEventNotifier.get().notifyEvent(new LocalVersionIsUpToDate());
@@ -54,7 +48,6 @@ public class VersionUpdater implements IVersionUpdater {
             }
             return;
         }
-
         TaskScheduler.downloadApk(mDownloadTaskInfo);
     }
 

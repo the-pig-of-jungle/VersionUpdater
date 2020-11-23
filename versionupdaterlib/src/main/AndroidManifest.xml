@@ -20,9 +20,14 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/version_updater_file_provider_paths" />
         </provider>
+        <!--for sdk 21 and above-->
         <service
-            android:name=".service.DownloadApkJobService"
+            android:name=".service.DownloadApkService21"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <!--for sdk 17-20-->
+        <service
+            android:name=".service.DownloadApkService17"
+            android:exported="false" />
     </application>
 
 </manifest>
