@@ -22,11 +22,11 @@ allprojects {
 2.在Module的grable文件中<br/>
 <pre><code>
 
-	dependencies {
+    dependencies {
 
-	  implementation 'com.github.opensource-zhuzhiqiang:version-updater:1.1.1'
+      implementation 'com.github.opensource-zhuzhiqiang:version-updater:1.1.1'
 
-	}
+    }
 
 </code></pre>
 
