@@ -5,11 +5,12 @@ import android.content.Intent;
 
 import com.coder.zzq.versionupdaterlib.communication.DownloadEventNotifier;
 
-public class DownloadTrigger17 implements DownloadTrigger {
+public class DownloadTrigger17 extends AbstractDownloadTrigger implements DownloadTrigger {
     private final Context mApplicationContext;
     private final Intent mServiceIntent;
 
-    public DownloadTrigger17(Context applicationContext, Intent serviceIntent) {
+    public DownloadTrigger17(Context applicationContext, Intent serviceIntent, int versionCode) {
+        super(versionCode);
         mApplicationContext = applicationContext;
         mServiceIntent = serviceIntent;
     }

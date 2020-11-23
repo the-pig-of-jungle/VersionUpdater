@@ -28,4 +28,21 @@ public class DownloadVersionInfoCache {
                 .putLong(ITEM_DOWNLOAD_ID, downloadId)
                 .apply();
     }
+
+
+    public static final String IGNORED_VERSION_PREF = "ignored_version";
+
+    private static SharedPreferences getIgnoredVersionPref() {
+        return Toolkit.getContext().getSharedPreferences(IGNORED_VERSION_PREF, Context.MODE_PRIVATE);
+    }
+
+    public static boolean isVersionIgnored(int versionCode) {
+        return getIgnoredVersionPref().getInt(ITEM_VERSION_CODE, 0) == versionCode;
+    }
+
+    public static void setVersionIgnored(int versionCode) {
+        getIgnoredVersionPref().edit()
+                .putInt(ITEM_VERSION_CODE, versionCode)
+                .apply();
+    }
 }

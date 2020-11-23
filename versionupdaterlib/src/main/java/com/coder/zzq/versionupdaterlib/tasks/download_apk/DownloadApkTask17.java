@@ -17,6 +17,6 @@ public class DownloadApkTask17 extends DownloadApkTask {
     protected DownloadTrigger createDownloadTrigger() {
         Intent serviceIntent = new Intent(Toolkit.getContext(), DownloadApkService17.class);
         serviceIntent.putExtra("download_task_info", mDownloadTaskInfo.toJson());
-        return new DownloadTrigger17(Toolkit.getContext(), serviceIntent);
+        return new DownloadTrigger17(Toolkit.getContext(), serviceIntent, mDownloadTaskInfo.getRemoteVersionCode());
     }
 }

@@ -48,6 +48,14 @@ public class VersionUpdater implements IVersionUpdater {
             }
             return;
         }
+
+        if (mDownloadTaskInfo.getDetectMode() == DownloadTaskInfo.DETECT_MODE_AUTO
+                && DownloadVersionInfoCache.isVersionIgnored(mDownloadTaskInfo.getRemoteVersionCode())) {
+            return;
+        }
+
+        DownloadVersionInfoCache.setVersionIgnored(0);
+
         TaskScheduler.downloadApk(mDownloadTaskInfo);
     }
 

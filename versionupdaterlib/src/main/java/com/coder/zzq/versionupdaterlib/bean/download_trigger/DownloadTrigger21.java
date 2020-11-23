@@ -9,10 +9,11 @@ import com.coder.zzq.versionupdaterlib.communication.DownloadEventNotifier;
 import com.coder.zzq.versionupdaterlib.util.UpdateUtil;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-public class DownloadTrigger21 implements DownloadTrigger {
+public class DownloadTrigger21 extends AbstractDownloadTrigger implements DownloadTrigger {
     private final JobInfo mJobInfo;
 
     public DownloadTrigger21(JobInfo jobInfo) {
+        super(jobInfo.getId());
         mJobInfo = jobInfo;
     }
 

@@ -4,4 +4,6 @@ public interface DownloadTrigger {
     void downloadInForeground();
 
     void downloadInBackground();
+
+    void ignoreThisVersion();
 }
