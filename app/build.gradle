@@ -1,28 +1,37 @@
-apply plugin: 'com.android.application'
+plugins {
+    id 'com.android.application'
+}
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 30
+
     defaultConfig {
         applicationId "com.coder.zzq.versionupdater"
-        minSdkVersion 15
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        buildConfigField 'String', 'FILE_PROVIDER_AUTHORITIES', '"com.coder.zzq.versionupdater.file_provider"'
+        minSdkVersion 17
+        targetSdkVersion 30
+        versionCode 2
+        versionName "2.0"
 
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 }
 
 dependencies {
-    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation project(':versionupdaterlib')
-    implementation 'com.android.support:design:27.1.1'
-    implementation 'org.greenrobot:eventbus:3.1.1'
 }
