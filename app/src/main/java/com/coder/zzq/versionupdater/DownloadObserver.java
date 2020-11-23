@@ -32,6 +32,7 @@ public class DownloadObserver extends AbstractDownloadObserver {
                     }).setNegativeButton("暂不更细", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    downloadTrigger.ignoreThisVersion();
                     dialog.dismiss();
                 }
             }).create().show();

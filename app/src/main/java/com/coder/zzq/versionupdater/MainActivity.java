@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     public void onGetClick(View view) {
 
         VersionUpdater.builder(getApplication())
-                .remoteVersionCode(3)
+                .remoteVersionCode(4)
                 .remoteVersionName("3.7.1")
                 .remoteVersionDesc("我愛你")
                 .remoteApkUrl("https://bxvip.oss-cn-zhangjiakou.aliyuncs.com/bxvip/androidapk/xunyingzy.apk")
