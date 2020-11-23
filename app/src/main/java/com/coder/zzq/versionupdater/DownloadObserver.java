@@ -1,17 +1,15 @@
 package com.coder.zzq.versionupdater;
 
 import android.content.DialogInterface;
-import android.os.Build;
 import android.util.Log;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.coder.zzq.versionupdaterlib.bean.ApkInstaller;
 import com.coder.zzq.versionupdaterlib.bean.DownloadProgress;
-import com.coder.zzq.versionupdaterlib.bean.DownloadTrigger;
 import com.coder.zzq.versionupdaterlib.bean.VersionInfo;
+import com.coder.zzq.versionupdaterlib.bean.download_trigger.DownloadTrigger;
 import com.coder.zzq.versionupdaterlib.communication.AbstractDownloadObserver;
 
 public class DownloadObserver extends AbstractDownloadObserver {
@@ -27,7 +25,6 @@ public class DownloadObserver extends AbstractDownloadObserver {
             new AlertDialog.Builder(activity)
                     .setMessage("发现新版本")
                     .setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
-                        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             downloadTrigger.downloadInForeground();

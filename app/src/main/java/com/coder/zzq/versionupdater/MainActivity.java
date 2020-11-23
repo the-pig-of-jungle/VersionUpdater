@@ -13,7 +13,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.versionupdaterlib.VersionUpdater;
 import com.coder.zzq.versionupdaterlib.bean.DownloadTaskInfo;
-import com.coder.zzq.versionupdaterlib.bean.download.event.DownloadEvent;
+import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadEvent;
 import com.coder.zzq.versionupdaterlib.communication.DownloadEventViewModel;
 import com.coder.zzq.versionupdaterlib.communication.ManualDetectObserver;
 
@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     public void onGetClick(View view) {
 
         VersionUpdater.builder(getApplication())
-                .remoteVersionCode(2)
+                .remoteVersionCode(3)
                 .remoteVersionName("3.7.1")
                 .remoteVersionDesc("我愛你")
                 .remoteApkUrl("https://bxvip.oss-cn-zhangjiakou.aliyuncs.com/bxvip/androidapk/xunyingzy.apk")
