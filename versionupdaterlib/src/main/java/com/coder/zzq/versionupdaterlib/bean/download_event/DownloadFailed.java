@@ -1,4 +1,4 @@
-package com.coder.zzq.versionupdaterlib.bean.download.event;
+package com.coder.zzq.versionupdaterlib.bean.download_event;
 
 import androidx.annotation.IntDef;
 
@@ -19,7 +19,7 @@ public class DownloadFailed extends DownloadEvent {
     }
 
     @Reason
-    private int mFailedReason;
+    private final int mFailedReason;
 
     @Reason
     public int getFailedReason() {

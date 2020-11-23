@@ -1,4 +1,4 @@
-package com.coder.zzq.versionupdaterlib.bean.download.event;
+package com.coder.zzq.versionupdaterlib.bean.download_event;
 
 public class DownloadRequestDuplicate extends DownloadEvent {
 }

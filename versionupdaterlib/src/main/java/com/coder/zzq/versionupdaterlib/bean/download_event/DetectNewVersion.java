@@ -1,7 +1,7 @@
-package com.coder.zzq.versionupdaterlib.bean.download.event;
+package com.coder.zzq.versionupdaterlib.bean.download_event;
 
-import com.coder.zzq.versionupdaterlib.bean.DownloadTrigger;
 import com.coder.zzq.versionupdaterlib.bean.VersionInfo;
+import com.coder.zzq.versionupdaterlib.bean.download_trigger.DownloadTrigger;
 
 public class DetectNewVersion extends DownloadEvent {
     private final VersionInfo mNewVersionInfo;
