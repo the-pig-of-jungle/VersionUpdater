@@ -1,9 +1,6 @@
 package com.coder.zzq.versionupdaterlib.communication;
 
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-
-import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadEvent;
 
 public class DownloadEventViewModel extends ViewModel {
     private DownloadEventLiveData mDownloadEventData;
@@ -12,7 +9,7 @@ public class DownloadEventViewModel extends ViewModel {
         DownloadEventNotifier.get().registerReceiver(this);
     }
 
-    public MutableLiveData<DownloadEvent> downloadEvent() {
+    public DownloadEventLiveData downloadEvent() {
         if (mDownloadEventData == null) {
             mDownloadEventData = new DownloadEventLiveData();
         }

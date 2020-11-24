@@ -10,8 +10,8 @@ public class DownloadEventLiveData extends MutableLiveData<DownloadEvent> {
     @Override
     public void removeObserver(@NonNull Observer<? super DownloadEvent> observer) {
         super.removeObserver(observer);
-        if (observer instanceof AbstractDownloadObserver) {
-            ((AbstractDownloadObserver) observer).releaseContext();
+        if (observer instanceof HoldActivityContextObserver) {
+            ((HoldActivityContextObserver) observer).releaseContext();
         }
     }
 }

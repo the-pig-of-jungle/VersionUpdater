@@ -1,29 +1,29 @@
 package com.coder.zzq.versionupdaterlib.communication;
 
-import androidx.lifecycle.Observer;
+import android.content.Context;
 
 import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadEvent;
 import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadRequestDuplicate;
 import com.coder.zzq.versionupdaterlib.bean.download_event.LocalVersionIsUpToDate;
 
-public abstract class ManualDetectObserver implements Observer<DownloadEvent> {
+public abstract class AbstractManualDetectObserver extends HoldActivityContextObserver {
 
-    public ManualDetectObserver() {
-
+    public AbstractManualDetectObserver(Context activityContext) {
+        super(activityContext);
     }
 
     @Override
     public final void onChanged(DownloadEvent downloadEvent) {
         if (downloadEvent instanceof LocalVersionIsUpToDate) {
-            onLocalVersionIsUpToDate();
+            onLocalVersionIsUpToDate(getActivityContext());
         } else if (downloadEvent instanceof DownloadRequestDuplicate) {
-            onDownloadRequestDuplicate();
+            onDownloadRequestDuplicate(getActivityContext());
         }
     }
 
-    protected abstract void onLocalVersionIsUpToDate();
+    protected abstract void onLocalVersionIsUpToDate(Context activityContext);
 
-    protected abstract void onDownloadRequestDuplicate();
+    protected abstract void onDownloadRequestDuplicate(Context activityContext);
 
 
 }
