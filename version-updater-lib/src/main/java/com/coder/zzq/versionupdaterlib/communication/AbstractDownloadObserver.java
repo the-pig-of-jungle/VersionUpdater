@@ -17,7 +17,7 @@ import java.lang.ref.WeakReference;
 
 public abstract class AbstractDownloadObserver implements Observer<DownloadEvent> {
 
-    private final WeakReference<AppCompatActivity> mAppCompatActivity;
+    private WeakReference<AppCompatActivity> mAppCompatActivity;
 
     public AbstractDownloadObserver(AppCompatActivity appCompatActivity) {
 
@@ -46,6 +46,12 @@ public abstract class AbstractDownloadObserver implements Observer<DownloadEvent
 
     protected void onDownloadFailed(@DownloadFailed.Reason int failedReason) {
 
+    }
+
+
+    public final void releaseContext() {
+        mAppCompatActivity.clear();
+        mAppCompatActivity = null;
     }
 
 }

@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel;
 import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadEvent;
 
 public class DownloadEventViewModel extends ViewModel {
-    MutableLiveData<DownloadEvent> mDownloadEventData;
+    private DownloadEventLiveData mDownloadEventData;
 
     public DownloadEventViewModel() {
         DownloadEventNotifier.get().registerReceiver(this);
@@ -14,7 +14,7 @@ public class DownloadEventViewModel extends ViewModel {
 
     public MutableLiveData<DownloadEvent> downloadEvent() {
         if (mDownloadEventData == null) {
-            mDownloadEventData = new MutableLiveData<>();
+            mDownloadEventData = new DownloadEventLiveData();
         }
         return mDownloadEventData;
     }
