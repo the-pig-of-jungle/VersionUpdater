@@ -20,6 +20,9 @@ public class DownloadTrigger21 extends AbstractDownloadTrigger implements Downlo
     @Override
     public void downloadInForeground() {
         DownloadEventNotifier.get().filteringIntermediateProgress(false);
+        if (UpdateUtil.isJobRunning(mJobInfo.getId())) {
+            return;
+        }
         UpdateUtil.getJobScheduler().schedule(mJobInfo);
     }
 
