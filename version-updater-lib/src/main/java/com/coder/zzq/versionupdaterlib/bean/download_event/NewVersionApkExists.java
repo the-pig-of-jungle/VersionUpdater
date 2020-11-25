@@ -1,14 +1,14 @@
 package com.coder.zzq.versionupdaterlib.bean.download_event;
 
 import com.coder.zzq.versionupdaterlib.bean.ApkInstaller;
-import com.coder.zzq.versionupdaterlib.bean.VersionInfo;
+import com.coder.zzq.versionupdaterlib.bean.ReadableVersionInfo;
 
 public class NewVersionApkExists extends DownloadEvent {
-    private final VersionInfo mVersionInfo;
+    private final ReadableVersionInfo mVersionInfo;
     private final ApkInstaller mApkInstaller;
 
-    public NewVersionApkExists(VersionInfo versionInfo, ApkInstaller apkInstaller) {
-        mVersionInfo = versionInfo;
+    public NewVersionApkExists(ReadableVersionInfo newVersionInfo, ApkInstaller apkInstaller) {
+        mVersionInfo = newVersionInfo;
         mApkInstaller = apkInstaller;
     }
 
@@ -16,7 +16,7 @@ public class NewVersionApkExists extends DownloadEvent {
         return mApkInstaller;
     }
 
-    public VersionInfo getVersionInfo() {
+    public ReadableVersionInfo getNewVersionInfo() {
         return mVersionInfo;
     }
 }

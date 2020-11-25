@@ -1,12 +1,12 @@
 package com.coder.zzq.versionupdaterlib.bean;
 
-public class VersionInfo {
+public class ReadableVersionInfo {
     private final int mVersionCode;
     private final String mVersionName;
     private final String mVersionDesc;
     private final boolean mForceUpdate;
 
-    public VersionInfo(int versionCode, String versionName, String versionDesc, boolean forceUpdate) {
+    public ReadableVersionInfo(int versionCode, String versionName, String versionDesc, boolean forceUpdate) {
         mVersionCode = versionCode;
         mVersionName = versionName;
         mVersionDesc = versionDesc;
