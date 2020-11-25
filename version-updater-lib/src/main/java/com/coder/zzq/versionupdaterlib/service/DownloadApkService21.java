@@ -9,7 +9,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.coder.zzq.toolkit.Toolkit;
-import com.coder.zzq.versionupdaterlib.bean.DownloadTaskInfo;
+import com.coder.zzq.versionupdaterlib.bean.RemoteVersion;
 import com.coder.zzq.versionupdaterlib.communication.DownloadVersionInfoCache;
 import com.coder.zzq.versionupdaterlib.tasks.TaskScheduler;
 import com.coder.zzq.versionupdaterlib.util.UpdateUtil;
@@ -23,14 +23,14 @@ public class DownloadApkService21 extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        DownloadTaskInfo downloadTaskInfo = DownloadTaskInfo.fromJson(params.getExtras().getString("download_task_info"));
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(downloadTaskInfo.getRemoteApkUrl()))
-                .setDestinationInExternalFilesDir(Toolkit.getContext(), "apk", UpdateUtil.getPackageName() + "_" + downloadTaskInfo.getRemoteVersionCode() + ".apk")
+        RemoteVersion remoteVersion = RemoteVersion.fromJson(params.getExtras().getString("remote_version"));
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(remoteVersion.getApkUrl()))
+                .setDestinationInExternalFilesDir(Toolkit.getContext(), "apk", UpdateUtil.getPackageName() + "_" + remoteVersion.getVersionCode() + ".apk")
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI)
-                .setTitle(UpdateUtil.getAppName() + ": " + downloadTaskInfo.getRemoteVersionName());
+                .setTitle(UpdateUtil.getAppName() + ": " + remoteVersion.getVersionName());
         long downloadId = UpdateUtil.getDownloadManager().enqueue(request);
-        DownloadVersionInfoCache.storeDownloadVersionInfoIntoCache(downloadTaskInfo.getRemoteVersionCode(), downloadId);
+        DownloadVersionInfoCache.storeDownloadVersionInfoIntoCache(remoteVersion.getVersionCode(), downloadId);
         TaskScheduler.queryDownloadProgress21(params.getJobId(), downloadId);
         return true;
     }

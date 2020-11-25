@@ -9,7 +9,7 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 
 import com.coder.zzq.toolkit.Toolkit;
-import com.coder.zzq.versionupdaterlib.bean.DownloadTaskInfo;
+import com.coder.zzq.versionupdaterlib.bean.RemoteVersion;
 import com.coder.zzq.versionupdaterlib.communication.DownloadVersionInfoCache;
 import com.coder.zzq.versionupdaterlib.tasks.TaskScheduler;
 import com.coder.zzq.versionupdaterlib.util.UpdateUtil;
@@ -36,14 +36,14 @@ public class DownloadApkService17 extends Service {
         if (mStartCount != 1) {
             return START_NOT_STICKY;
         }
-        DownloadTaskInfo downloadTaskInfo = DownloadTaskInfo.fromJson(intent.getExtras().getString("download_task_info"));
-        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(downloadTaskInfo.getRemoteApkUrl()))
-                .setDestinationInExternalFilesDir(Toolkit.getContext(), "apk", UpdateUtil.getPackageName() + "_" + downloadTaskInfo.getRemoteVersionCode() + ".apk")
+        RemoteVersion remoteVersion = RemoteVersion.fromJson(intent.getExtras().getString("remote_version"));
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(remoteVersion.getApkUrl()))
+                .setDestinationInExternalFilesDir(Toolkit.getContext(), "apk", UpdateUtil.getPackageName() + "_" + remoteVersion.getVersionCode() + ".apk")
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
                 .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI)
-                .setTitle(UpdateUtil.getAppName() + ": " + downloadTaskInfo.getRemoteVersionName());
+                .setTitle(UpdateUtil.getAppName() + ": " + remoteVersion.getVersionName());
         long downloadId = UpdateUtil.getDownloadManager().enqueue(request);
-        DownloadVersionInfoCache.storeDownloadVersionInfoIntoCache(downloadTaskInfo.getRemoteVersionCode(), downloadId);
+        DownloadVersionInfoCache.storeDownloadVersionInfoIntoCache(remoteVersion.getVersionCode(), downloadId);
         TaskScheduler.queryDownloadProgress17(downloadId);
         return START_NOT_STICKY;
     }

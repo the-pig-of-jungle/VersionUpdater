@@ -4,7 +4,7 @@ import android.app.DownloadManager;
 import android.database.Cursor;
 import android.net.Uri;
 
-import com.coder.zzq.versionupdaterlib.bean.DownloadTaskInfo;
+import com.coder.zzq.versionupdaterlib.bean.RemoteVersion;
 import com.coder.zzq.versionupdaterlib.bean.download_event.DetectNewVersion;
 import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadRequestDuplicate;
 import com.coder.zzq.versionupdaterlib.bean.download_event.NewVersionApkExists;
@@ -17,17 +17,17 @@ import java.io.File;
 
 
 public abstract class DownloadApkTask implements Runnable {
-    protected final DownloadTaskInfo mDownloadTaskInfo;
+    protected final RemoteVersion mRemoteVersion;
 
-    public DownloadApkTask(DownloadTaskInfo downloadTaskInfo) {
-        mDownloadTaskInfo = downloadTaskInfo;
+    public DownloadApkTask(RemoteVersion remoteVersion) {
+        mRemoteVersion = remoteVersion;
     }
 
     @Override
     public void run() {
         int cachedVersionCode = DownloadVersionInfoCache.getDownloadVersionCodeFromCache();
         long cachedDownloadId = DownloadVersionInfoCache.getDownloadIdFromCache();
-        if (cachedVersionCode == mDownloadTaskInfo.getRemoteVersionCode()) {
+        if (cachedVersionCode == mRemoteVersion.getVersionCode()) {
             DownloadManager downloadManager = UpdateUtil.getDownloadManager();
             DownloadManager.Query query = new DownloadManager.Query();
             query.setFilterById(cachedDownloadId);
@@ -39,7 +39,7 @@ public abstract class DownloadApkTask implements Runnable {
                             String uriStr = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
                             File file = UpdateUtil.getApkFileByVersionCode(cachedVersionCode);
                             if (file.exists()) {
-                                DownloadEventNotifier.get().notifyEvent(new NewVersionApkExists(mDownloadTaskInfo.fetchBaseVersionInfo(), UpdateUtil.createApkInstaller(Uri.parse(uriStr), true)));
+                                DownloadEventNotifier.get().notifyEvent(new NewVersionApkExists(mRemoteVersion.createReadableOnlyVersionInfo(), UpdateUtil.createApkInstaller(Uri.parse(uriStr), true)));
                                 return;
                             }
                             break;
@@ -56,7 +56,7 @@ public abstract class DownloadApkTask implements Runnable {
 
 
         DownloadEventNotifier.get().notifyEvent(new DetectNewVersion(
-                mDownloadTaskInfo.fetchBaseVersionInfo(),
+                mRemoteVersion.createReadableOnlyVersionInfo(),
                 createDownloadTrigger())
         );
     }

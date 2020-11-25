@@ -4,7 +4,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.coder.zzq.versionupdaterlib.bean.DownloadTaskInfo;
+import com.coder.zzq.versionupdaterlib.bean.RemoteVersion;
 import com.coder.zzq.versionupdaterlib.tasks.download_apk.DownloadApkTask17;
 import com.coder.zzq.versionupdaterlib.tasks.download_apk.DownloadApkTask21;
 import com.coder.zzq.versionupdaterlib.tasks.query_progress.QueryProgressTask;
@@ -17,21 +17,21 @@ public class TaskScheduler {
         ThreadPool.submit(new CleanApkFileTask());
     }
 
-    public static void downloadApk(DownloadTaskInfo downloadTaskInfo) {
+    public static void downloadApk(RemoteVersion remoteVersion) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            downloadApk21(downloadTaskInfo);
+            downloadApk21(remoteVersion);
         } else {
-            downloadApk17(downloadTaskInfo);
+            downloadApk17(remoteVersion);
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private static void downloadApk21(DownloadTaskInfo downloadTaskInfo) {
-        ThreadPool.submit(new DownloadApkTask21(downloadTaskInfo));
+    private static void downloadApk21(RemoteVersion remoteVersion) {
+        ThreadPool.submit(new DownloadApkTask21(remoteVersion));
     }
 
-    private static void downloadApk17(DownloadTaskInfo downloadTaskInfo) {
-        ThreadPool.submit(new DownloadApkTask17(downloadTaskInfo));
+    private static void downloadApk17(RemoteVersion remoteVersion) {
+        ThreadPool.submit(new DownloadApkTask17(remoteVersion));
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
