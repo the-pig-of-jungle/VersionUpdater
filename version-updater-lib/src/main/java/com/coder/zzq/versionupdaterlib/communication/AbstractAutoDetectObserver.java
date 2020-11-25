@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.coder.zzq.versionupdaterlib.bean.ApkInstaller;
 import com.coder.zzq.versionupdaterlib.bean.DownloadProgress;
-import com.coder.zzq.versionupdaterlib.bean.VersionInfo;
+import com.coder.zzq.versionupdaterlib.bean.ReadableVersionInfo;
 import com.coder.zzq.versionupdaterlib.bean.download_event.DetectNewVersion;
 import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadEvent;
 import com.coder.zzq.versionupdaterlib.bean.download_event.DownloadFailed;
@@ -26,16 +26,16 @@ public abstract class AbstractAutoDetectObserver extends HoldActivityContextObse
         } else if (downloadEvent instanceof DownloadFailed) {
             onDownloadFailed(getActivityContext(), ((DownloadFailed) downloadEvent).getFailedReason());
         } else if (downloadEvent instanceof NewVersionApkExists) {
-            onNewVersionApkExists(getActivityContext(), ((NewVersionApkExists) downloadEvent).getVersionInfo(), ((NewVersionApkExists) downloadEvent).getApkInstaller());
+            onNewVersionApkExists(getActivityContext(), ((NewVersionApkExists) downloadEvent).getNewVersionInfo(), ((NewVersionApkExists) downloadEvent).getApkInstaller());
         }
     }
 
 
-    protected abstract void onDetectNewVersion(Context activityContext, VersionInfo newVersionInfo, DownloadTrigger downloadTrigger);
+    protected abstract void onDetectNewVersion(Context activityContext, ReadableVersionInfo newVersionInfo, DownloadTrigger downloadTrigger);
 
     protected abstract void onDownloadProgressChanged(Context activityContext, DownloadProgress downloadProgress, ApkInstaller apkInstaller);
 
-    protected abstract void onNewVersionApkExists(Context activityContext, VersionInfo versionInfo, ApkInstaller apkInstaller);
+    protected abstract void onNewVersionApkExists(Context activityContext, ReadableVersionInfo newVersionInfo, ApkInstaller apkInstaller);
 
     protected void onDownloadFailed(Context activityContext, @DownloadFailed.Reason int failedReason) {
 
