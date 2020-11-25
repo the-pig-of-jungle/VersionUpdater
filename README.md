@@ -24,7 +24,7 @@ allprojects {
 
     dependencies {
 
-      implementation 'com.github.opensource-zhuzhiqiang:version-updater:1.1.1'
+      implementation 'com.github.opensource-zhuzhiqiang:version-updater:1.1.2'
 
     }
 
