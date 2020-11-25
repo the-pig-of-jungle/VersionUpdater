@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
 import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.versionupdaterlib.VersionUpdaterFileProvider;
 import com.coder.zzq.versionupdaterlib.bean.ApkInstaller;
@@ -83,7 +85,9 @@ public class UpdateUtil {
         return (DownloadManager) Toolkit.getContext().getSystemService(Context.DOWNLOAD_SERVICE);
     }
 
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public static JobScheduler getJobScheduler() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? (JobScheduler) Toolkit.getContext().getSystemService(Context.JOB_SCHEDULER_SERVICE) : null;
+        return (JobScheduler) Toolkit.getContext().getSystemService(Context.JOB_SCHEDULER_SERVICE);
     }
 }

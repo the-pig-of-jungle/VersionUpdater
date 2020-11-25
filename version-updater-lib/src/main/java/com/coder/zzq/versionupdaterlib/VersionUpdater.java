@@ -1,11 +1,13 @@
 package com.coder.zzq.versionupdaterlib;
 
-import android.app.Application;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
-import com.coder.zzq.toolkit.Toolkit;
-import com.coder.zzq.versionupdaterlib.bean.DownloadTaskInfo;
 import com.coder.zzq.versionupdaterlib.bean.download_event.LocalVersionIsUpToDate;
+import com.coder.zzq.versionupdaterlib.communication.DownloadEventLiveData;
 import com.coder.zzq.versionupdaterlib.communication.DownloadEventNotifier;
+import com.coder.zzq.versionupdaterlib.communication.DownloadEventViewModel;
 import com.coder.zzq.versionupdaterlib.communication.DownloadVersionInfoCache;
 import com.coder.zzq.versionupdaterlib.tasks.TaskScheduler;
 import com.coder.zzq.versionupdaterlib.util.UpdateUtil;
@@ -17,30 +19,55 @@ import com.coder.zzq.versionupdaterlib.util.UpdateUtil;
 public class VersionUpdater implements IVersionUpdater {
     private static VersionUpdater sVersionUpdater = new VersionUpdater();
 
-    protected static IVersionUpdater create(DownloadTaskInfo downloadTaskInfo) {
-        return sVersionUpdater.setDownloadTaskInfo(downloadTaskInfo);
+    protected static IVersionUpdater create(CheckConfig checkConfig) {
+        return sVersionUpdater.setCheckConfig(checkConfig);
     }
 
-    private DownloadTaskInfo mDownloadTaskInfo;
+    private CheckConfig mCheckConfig;
 
     private VersionUpdater() {
 
     }
 
-    private VersionUpdater setDownloadTaskInfo(DownloadTaskInfo downloadTaskInfo) {
-        mDownloadTaskInfo = downloadTaskInfo;
+    public VersionUpdater setCheckConfig(CheckConfig checkConfig) {
+        mCheckConfig = checkConfig;
         return this;
     }
 
-    public static IUpdaterBuilder builder(Application application) {
-        Toolkit.init(application);
+    public static IUpdaterBuilder builder() {
+
         return new UpdateBuilder();
     }
 
     @Override
-    public void check() {
-        if (mDownloadTaskInfo.getRemoteVersionCode() <= UpdateUtil.getVersionCode()) {
-            if (mDownloadTaskInfo.getDetectMode() == DownloadTaskInfo.DETECT_MODE_MANUAL) {
+    public void autoCheck() {
+        mCheckConfig.setDetectMode(CheckConfig.DETECT_MODE_AUTO);
+        check();
+    }
+
+    @Override
+    public void manualCheck() {
+        mCheckConfig.setDetectMode(CheckConfig.DETECT_MODE_MANUAL);
+        check();
+    }
+
+    private void check() {
+        DownloadEventLiveData downloadEventLiveData =
+                new ViewModelProvider(mCheckConfig.getObserverPage().getViewModelStoreOwner())
+                        .get(DownloadEventViewModel.class)
+                        .downloadEvent();
+
+        if (!downloadEventLiveData.hasObservers()) {
+            downloadEventLiveData.observe(mCheckConfig.getObserverPage().getLifecycleOwner(), new autoDetectObserver(mCheckConfig.getObserverPage().getActivityContext()));
+            if (mCheckConfig.getDetectMode() == CheckConfig.DETECT_MODE_MANUAL) {
+                downloadEventLiveData.observe(mCheckConfig.getObserverPage().getLifecycleOwner(), new ManualDetectObserver(mCheckConfig.getObserverPage().getActivityContext()));
+            }
+        }
+
+        mCheckConfig.getObserverPage().release();
+
+        if (mCheckConfig.getRemoteVersion().getVersionCode() <= UpdateUtil.getVersionCode()) {
+            if (mCheckConfig.getDetectMode() == CheckConfig.DETECT_MODE_MANUAL) {
                 DownloadEventNotifier.get().notifyEvent(new LocalVersionIsUpToDate());
             }
             if (DownloadVersionInfoCache.getDownloadVersionCodeFromCache() != 0) {
@@ -49,14 +76,14 @@ public class VersionUpdater implements IVersionUpdater {
             return;
         }
 
-        if (mDownloadTaskInfo.getDetectMode() == DownloadTaskInfo.DETECT_MODE_AUTO
-                && DownloadVersionInfoCache.isVersionIgnored(mDownloadTaskInfo.getRemoteVersionCode())) {
+        if (mCheckConfig.getDetectMode() == CheckConfig.DETECT_MODE_AUTO
+                && DownloadVersionInfoCache.isVersionIgnored(mCheckConfig.getRemoteVersion().getVersionCode())) {
             return;
         }
 
         DownloadVersionInfoCache.setVersionIgnored(0);
 
-        TaskScheduler.downloadApk(mDownloadTaskInfo);
+        TaskScheduler.downloadApk(mCheckConfig.getRemoteVersion());
     }
 
 
@@ -74,63 +101,76 @@ public class VersionUpdater implements IVersionUpdater {
 
         IUpdaterBuilder notificationVisibility(boolean visible);
 
-        IUpdaterBuilder detectMode(int detectMode);
+        IUpdaterBuilder observer(AppCompatActivity activity);
+
+        IUpdaterBuilder observer(Fragment fragment);
 
         IVersionUpdater build();
     }
 
     public static class UpdateBuilder implements IUpdaterBuilder {
-        private DownloadTaskInfo mDownloadTaskInfo;
+        private final CheckConfig mCheckConfig;
 
         private UpdateBuilder() {
-            mDownloadTaskInfo = new DownloadTaskInfo();
+            mCheckConfig = new CheckConfig();
         }
 
         public IUpdaterBuilder remoteVersionCode(int versionCode) {
-            mDownloadTaskInfo.setRemoteVersionCode(versionCode);
+            mCheckConfig.getRemoteVersion().setVersionCode(versionCode);
             return this;
         }
 
         @Override
         public IUpdaterBuilder remoteVersionName(String versionName) {
-            mDownloadTaskInfo.setRemoteVersionName(versionName);
+            mCheckConfig.getRemoteVersion().setVersionName(versionName);
             return this;
         }
 
         @Override
         public IUpdaterBuilder remoteApkUrl(String apkUrl) {
-            mDownloadTaskInfo.setRemoteApkUrl(apkUrl);
+            mCheckConfig.getRemoteVersion().setApkUrl(apkUrl);
             return this;
         }
 
         @Override
         public IUpdaterBuilder remoteVersionDesc(String desc) {
-            mDownloadTaskInfo.setRemoteVersionDesc(desc);
+            mCheckConfig.getRemoteVersion().setVersionDesc(desc);
             return this;
         }
 
         @Override
         public IUpdaterBuilder forceUpdate(boolean forceUpdate) {
-            mDownloadTaskInfo.setForceUpdate(forceUpdate);
+            mCheckConfig.getRemoteVersion().setForceUpdate(forceUpdate);
             return this;
         }
 
         @Override
         public IUpdaterBuilder notificationVisibility(boolean visible) {
-            mDownloadTaskInfo.setNotificationVisibility(visible);
+            mCheckConfig.setNotificationVisibility(visible);
             return this;
         }
 
+        @Override
+        public IUpdaterBuilder observer(AppCompatActivity activity) {
+            mCheckConfig.getObserverPage()
+                    .setActivityContext(activity)
+                    .setViewModelStoreOwner(activity)
+                    .setLifecycleOwner(activity);
+            return this;
+        }
 
         @Override
-        public IUpdaterBuilder detectMode(int detectMode) {
-            mDownloadTaskInfo.setDetectMode(detectMode);
+        public IUpdaterBuilder observer(Fragment fragment) {
+            mCheckConfig.getObserverPage()
+                    .setActivityContext(fragment.getActivity())
+                    .setViewModelStoreOwner(fragment)
+                    .setLifecycleOwner(fragment.getViewLifecycleOwner());
             return this;
         }
 
         @Override
         public IVersionUpdater build() {
-            return VersionUpdater.create(mDownloadTaskInfo);
+            return VersionUpdater.create(mCheckConfig);
         }
 
     }
