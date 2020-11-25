@@ -1,1 +1,3 @@
+include ':annotation-compiler'
+include ':annotations'
 include ':app', ':version-updater-lib'
