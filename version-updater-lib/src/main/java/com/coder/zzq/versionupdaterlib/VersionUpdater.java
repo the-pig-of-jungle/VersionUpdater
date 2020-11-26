@@ -2,22 +2,22 @@ package com.coder.zzq.versionupdaterlib;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.coder.zzq.versionupdaterlib.bean.download_event.LocalVersionIsUpToDate;
-import com.coder.zzq.versionupdaterlib.communication.DownloadEventLiveData;
+import com.coder.zzq.versionupdaterlib.communication.DetectObserverRegisterProvider;
 import com.coder.zzq.versionupdaterlib.communication.DownloadEventNotifier;
-import com.coder.zzq.versionupdaterlib.communication.DownloadEventViewModel;
 import com.coder.zzq.versionupdaterlib.communication.DownloadVersionInfoCache;
 import com.coder.zzq.versionupdaterlib.tasks.TaskScheduler;
 import com.coder.zzq.versionupdaterlib.util.UpdateUtil;
+
+//import com.coder.zzq.versionupdaterlib.communication.DetectObserverRegister;
 
 /**
  * Created by zhiqiang.zhu on 2018/1/31.
  */
 
 public class VersionUpdater implements IVersionUpdater {
-    private static VersionUpdater sVersionUpdater = new VersionUpdater();
+    private static final VersionUpdater sVersionUpdater = new VersionUpdater();
 
     protected static IVersionUpdater create(CheckConfig checkConfig) {
         return sVersionUpdater.setCheckConfig(checkConfig);
@@ -29,7 +29,7 @@ public class VersionUpdater implements IVersionUpdater {
 
     }
 
-    public VersionUpdater setCheckConfig(CheckConfig checkConfig) {
+    protected VersionUpdater setCheckConfig(CheckConfig checkConfig) {
         mCheckConfig = checkConfig;
         return this;
     }
@@ -52,19 +52,8 @@ public class VersionUpdater implements IVersionUpdater {
     }
 
     private void check() {
-        DownloadEventLiveData downloadEventLiveData =
-                new ViewModelProvider(mCheckConfig.getObserverPage().getViewModelStoreOwner())
-                        .get(DownloadEventViewModel.class)
-                        .downloadEvent();
-
-        if (!downloadEventLiveData.hasObservers()) {
-            downloadEventLiveData.observe(mCheckConfig.getObserverPage().getLifecycleOwner(), new autoDetectObserver(mCheckConfig.getObserverPage().getActivityContext()));
-            if (mCheckConfig.getDetectMode() == CheckConfig.DETECT_MODE_MANUAL) {
-                downloadEventLiveData.observe(mCheckConfig.getObserverPage().getLifecycleOwner(), new ManualDetectObserver(mCheckConfig.getObserverPage().getActivityContext()));
-            }
-        }
-
-        mCheckConfig.getObserverPage().release();
+        DetectObserverRegisterProvider.getDetectObserverRegister()
+                .register(mCheckConfig);
 
         if (mCheckConfig.getRemoteVersion().getVersionCode() <= UpdateUtil.getVersionCode()) {
             if (mCheckConfig.getDetectMode() == CheckConfig.DETECT_MODE_MANUAL) {
