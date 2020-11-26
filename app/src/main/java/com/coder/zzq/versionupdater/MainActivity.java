@@ -6,21 +6,13 @@ import android.view.View;
 import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.coder.zzq.toolkit.Toolkit;
-import com.coder.zzq.versionupdaterlib.ManualDetectObserver;
+import com.coder.zzq.versionupdater.annotations.AutoCheck;
 import com.coder.zzq.versionupdaterlib.VersionUpdater;
-import com.coder.zzq.versionupdaterlib.autoDetectObserver;
-import com.coder.zzq.versionupdaterlib.communication.DownloadEventLiveData;
-import com.coder.zzq.versionupdaterlib.communication.DownloadEventViewModel;
-
-
 public class MainActivity extends AppCompatActivity {
 
     private String[] mPermission;
-
     public static long mId;
 
     private EditText mEditText;
@@ -38,7 +30,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onGetClick(View view) {
-        Toolkit.init(getApplication());
         Toolkit.setEnablePrintLog(true);
         VersionUpdater.builder()
                 .remoteVersionCode(4)
