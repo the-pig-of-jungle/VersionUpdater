@@ -23,9 +23,9 @@ allprojects {
 <pre><code>
 
     dependencies {
+          implementation 'com.github.opensource-zhuzhiqiang.version-updater:core:1.1.4'
 
-      implementation 'com.github.opensource-zhuzhiqiang:version-updater:1.1.3'
-
+          annotationProcessor 'com.github.opensource-zhuzhiqiang.version-updater:annotation-compiler:1.1.4'
     }
 
 </code></pre>
