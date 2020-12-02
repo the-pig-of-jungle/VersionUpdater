@@ -9,24 +9,24 @@ APP版本更新器，将app版本升级中的通用逻辑与具体的UI展示剥
 <pre><code>
 allprojects {
 
-    repositories {
+repositories {
 
-        ...
+    ...
 
-        maven { url 'https://jitpack.io' }
+    maven { url 'https://jitpack.io' }
 
-    }
+}
 
 }
 </code></pre>
 2.在Module的gradle文件中<br/>
 <pre><code>
 
-    dependencies {
-          implementation 'com.github.zhuzhiqiang-series.version-updater:core:1.1.5'
+dependencies {
+      implementation 'com.github.zhuzhiqiang-series.app-updater:core:1.1.5'
 
-          annotationProcessor 'com.github.zhuzhiqiang-series.version-updater:annotation-compiler:1.1.5'
-    }
+      annotationProcessor 'com.github.zhuzhiqiang-series.app-updater:annotation-compiler:1.1.5'
+}
 
 </code></pre>
 
