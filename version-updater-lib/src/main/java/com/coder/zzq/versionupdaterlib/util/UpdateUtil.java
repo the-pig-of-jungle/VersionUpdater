@@ -70,7 +70,7 @@ public class UpdateUtil {
 
     public static ApkInstaller createApkInstaller(Uri uri, boolean needTransfer) {
         if (needTransfer && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            uri = VersionUpdaterFileProvider.getUriForFile(Toolkit.getContext(), "com.coder.zzq.version_updater.file_provider", new File(uri.getPath()));
+            uri = VersionUpdaterFileProvider.getUriForFile(Toolkit.getContext(), UpdateUtil.getPackageName() + ".version_updater.file_provider", new File(uri.getPath()));
         }
         return new ApkInstaller(
                 new Intent()
