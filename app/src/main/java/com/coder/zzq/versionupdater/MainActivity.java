@@ -8,8 +8,8 @@ import android.widget.EditText;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.coder.zzq.toolkit.Toolkit;
-import com.coder.zzq.versionupdater.annotations.AutoCheck;
 import com.coder.zzq.versionupdaterlib.VersionUpdater;
+
 public class MainActivity extends AppCompatActivity {
 
     private String[] mPermission;
@@ -36,9 +36,9 @@ public class MainActivity extends AppCompatActivity {
                 .remoteVersionName("3.7.1")
                 .remoteVersionDesc("我愛你")
                 .remoteApkUrl("https://bxvip.oss-cn-zhangjiakou.aliyuncs.com/bxvip/androidapk/xunyingzy.apk")
-                .forceUpdate(false)
+                .forceUpdate(true)
                 .observer(this)
                 .build()
-                .manualCheck();
+                .autoCheck();
     }
 }

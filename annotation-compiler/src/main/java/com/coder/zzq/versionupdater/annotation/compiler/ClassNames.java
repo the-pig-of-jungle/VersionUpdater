@@ -36,7 +36,7 @@ public class ClassNames {
 
     public static final ClassName VERSION_UPDATER_INITIALIZER =
             ClassName.get("com.coder.zzq.versionupdaterlib",
-                    "VersionUpdaterInitializer");
+                    "AppUpdaterInitializer");
 
     public static final ClassName TOOLKIT =
             ClassName.get("com.coder.zzq.toolkit", "Toolkit");

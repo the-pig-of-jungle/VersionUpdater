@@ -33,6 +33,7 @@ android {
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.3.0-alpha02'
-    implementation project(path: ':version-updater-lib')
+    implementation project(path: ':app-updater-lib')
     annotationProcessor project(path: ':annotation-compiler')
+    implementation 'com.github.the-pig-of-jungle.smart-show:dialog:3.0.3'
 }
