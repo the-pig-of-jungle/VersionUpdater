@@ -92,7 +92,7 @@ public class DownloadVersionInfoCache {
     }
 
     public static void clearIgnoreVersion() {
-        getDownloadVersionInfoPref().edit().clear().apply();
+        getIgnoredVersionPref().edit().clear().apply();
     }
 
 
