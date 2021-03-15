@@ -7,8 +7,9 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.coder.zzq.version_updater.VersionUpdater;
 import com.coder.zzq.toolkit.Toolkit;
-import com.coder.zzq.versionupdaterlib.VersionUpdater;
+
 
 public class MainActivity extends AppCompatActivity {
 

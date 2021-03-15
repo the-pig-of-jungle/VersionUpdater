@@ -3,16 +3,18 @@ package com.coder.zzq.versionupdater;
 import android.app.Activity;
 import android.content.Context;
 
+
+import com.coder.zzq.version_updater.bean.ApkInstaller;
+import com.coder.zzq.version_updater.bean.DownloadProgress;
+import com.coder.zzq.version_updater.bean.ReadableVersionInfo;
+import com.coder.zzq.version_updater.bean.download_trigger.DownloadTrigger;
+import com.coder.zzq.version_updater.communication.AbstractAutoDetectObserver;
 import com.coder.zzq.smartshow.dialog.DialogBtnClickListener;
 import com.coder.zzq.smartshow.dialog.NotificationDialog;
 import com.coder.zzq.smartshow.dialog.SmartDialog;
 import com.coder.zzq.toolkit.Utils;
 import com.coder.zzq.versionupdater.annotations.AutoCheck;
-import com.coder.zzq.versionupdaterlib.bean.ApkInstaller;
-import com.coder.zzq.versionupdaterlib.bean.DownloadProgress;
-import com.coder.zzq.versionupdaterlib.bean.ReadableVersionInfo;
-import com.coder.zzq.versionupdaterlib.bean.download_trigger.DownloadTrigger;
-import com.coder.zzq.versionupdaterlib.communication.AbstractAutoDetectObserver;
+
 
 @AutoCheck
 public class AutoDetectObserver extends AbstractAutoDetectObserver {
@@ -34,6 +36,7 @@ public class AutoDetectObserver extends AbstractAutoDetectObserver {
                             downloadTrigger.downloadInForeground();
                         } else {
                             downloadTrigger.downloadInBackground();
+                            downloadTrigger.cancelUpdate();
                         }
                     }
                 }).showInActivity((Activity) context);

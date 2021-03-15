@@ -103,7 +103,7 @@ public class VersionUpdaterProcessor extends AbstractProcessor {
 
 
         try {
-            JavaFile.builder("com.coder.zzq.versionupdaterlib", detectObserverRegisterClass)
+            JavaFile.builder("com.coder.zzq.version_updater", detectObserverRegisterClass)
                     .build()
                     .writeTo(mProcessingEnvironment.getFiler());
         } catch (IOException e) {
@@ -127,7 +127,7 @@ public class VersionUpdaterProcessor extends AbstractProcessor {
                 .build();
 
         try {
-            JavaFile.builder("com.coder.zzq.versionupdaterlib", initializer)
+            JavaFile.builder("com.coder.zzq.version_updater", initializer)
                     .build()
                     .writeTo(mProcessingEnvironment.getFiler());
         } catch (IOException e) {

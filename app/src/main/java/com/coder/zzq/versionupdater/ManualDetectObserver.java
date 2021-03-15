@@ -2,8 +2,8 @@ package com.coder.zzq.versionupdater;
 
 import android.content.Context;
 
+import com.coder.zzq.version_updater.communication.AbstractManualDetectObserver;
 import com.coder.zzq.versionupdater.annotations.ManualCheck;
-import com.coder.zzq.versionupdaterlib.communication.AbstractManualDetectObserver;
 
 @ManualCheck
 public class ManualDetectObserver extends AbstractManualDetectObserver {
