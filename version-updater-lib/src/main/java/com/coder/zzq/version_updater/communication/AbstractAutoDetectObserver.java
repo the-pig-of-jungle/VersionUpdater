@@ -24,7 +24,7 @@ public abstract class AbstractAutoDetectObserver extends HoldActivityContextObse
         } else if (downloadEvent instanceof DownloadInProgress) {
             onDownloadProgressChanged(getActivityContext(), ((DownloadInProgress) downloadEvent).getDownloadProgress(), ((DownloadInProgress) downloadEvent).getNewVersionInfo(), ((DownloadInProgress) downloadEvent).getApkInstaller());
         } else if (downloadEvent instanceof DownloadFailed) {
-            onDownloadFailed(getActivityContext(), ((DownloadFailed) downloadEvent).getFailedReason());
+            onDownloadFailed(getActivityContext(), (DownloadFailed) downloadEvent);
         } else if (downloadEvent instanceof NewVersionApkExists) {
             onNewVersionApkExists(getActivityContext(), ((NewVersionApkExists) downloadEvent).getNewVersionInfo(), ((NewVersionApkExists) downloadEvent).getApkInstaller());
         }
@@ -37,7 +37,5 @@ public abstract class AbstractAutoDetectObserver extends HoldActivityContextObse
 
     protected abstract void onNewVersionApkExists(Context activityContext, ReadableVersionInfo newVersionInfo, ApkInstaller apkInstaller);
 
-    protected void onDownloadFailed(Context activityContext, @DownloadFailed.Reason int failedReason) {
-
-    }
+    protected abstract void onDownloadFailed(Context activityContext, DownloadFailed downloadFailed);
 }

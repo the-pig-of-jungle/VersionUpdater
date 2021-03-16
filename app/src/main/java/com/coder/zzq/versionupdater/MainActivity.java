@@ -7,8 +7,9 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.coder.zzq.version_updater.VersionUpdater;
 import com.coder.zzq.toolkit.Toolkit;
+import com.coder.zzq.version_updater.VersionUpdater;
+import com.coder.zzq.version_updater.bean.IgnorePeriod;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -33,11 +34,12 @@ public class MainActivity extends AppCompatActivity {
     public void onGetClick(View view) {
         Toolkit.setEnablePrintLog(true);
         VersionUpdater.builder()
-                .remoteVersionCode(4)
+                .remoteVersionCode(6)
                 .remoteVersionName("3.7.1")
                 .remoteVersionDesc("我愛你")
-                .remoteApkUrl("https://bxvip.oss-cn-zhangjiakou.aliyuncs.com/bxvip/androidapk/xunyingzy.apk")
-                .forceUpdate(true)
+                .remoteApkUrl("https://xvip.oss-cn-zhangjiakou.aliyuncs.com/bxvip/androidapk/xunyingzy.apk")
+                .forceUpdate(false)
+                .ignorePeriod(IgnorePeriod.create().days(1).combine())
                 .observer(this)
                 .build()
                 .autoCheck();

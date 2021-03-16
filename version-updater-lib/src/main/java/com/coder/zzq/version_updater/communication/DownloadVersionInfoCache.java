@@ -3,11 +3,12 @@ package com.coder.zzq.version_updater.communication;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.coder.zzq.version_updater.bean.IgnorePeriod;
 import com.coder.zzq.toolkit.Toolkit;
+import com.coder.zzq.version_updater.bean.IgnorePeriod;
+
 import java.util.Date;
 
-import static com.coder.zzq.version_updater.Constants.NO_DEFINE;
+import static com.coder.zzq.version_updater.Constants.NO_SPECIFY;
 
 
 public class DownloadVersionInfoCache {
@@ -50,6 +51,10 @@ public class DownloadVersionInfoCache {
                 .apply();
     }
 
+    public static void clearCachedDownloadInfo() {
+        getDownloadVersionInfoPref().edit().clear().apply();
+    }
+
 
     public static final String IGNORED_VERSION_PREF = "ignored_version";
 
@@ -64,7 +69,7 @@ public class DownloadVersionInfoCache {
     }
 
     private static boolean ignoredPeriodExpire(long ignorePeriod) {
-        if (ignorePeriod == NO_DEFINE) {
+        if (ignorePeriod == NO_SPECIFY) {
             ignorePeriod = getIgnoredVersionPref().getLong(ITEM_IGNORED_PERIOD, IgnorePeriod.never());
         } else {
             getIgnoredVersionPref().edit().putLong(ITEM_IGNORED_PERIOD, ignorePeriod).apply();
@@ -79,11 +84,14 @@ public class DownloadVersionInfoCache {
         }
 
 
-        long ignoreMoment = getIgnoredVersionPref().getLong(ITEM_IGNORED_TRIGGERED_MOMENT, NO_DEFINE);
-        return new Date().getTime() - ignoreMoment > ignorePeriod;
+        long ignoreMoment = getIgnoredVersionPref().getLong(ITEM_IGNORED_TRIGGERED_MOMENT, NO_SPECIFY);
+        return new Date().getTime() - ignoreMoment > ignorePeriod * 1000;
     }
 
     public static void ignoreVersion(int versionCode, long ignorePeriod) {
+        if (ignorePeriod == NO_SPECIFY) {
+            ignorePeriod = IgnorePeriod.never();
+        }
         getIgnoredVersionPref().edit()
                 .putInt(ITEM_VERSION_CODE, versionCode)
                 .putLong(ITEM_IGNORED_TRIGGERED_MOMENT, new Date().getTime())

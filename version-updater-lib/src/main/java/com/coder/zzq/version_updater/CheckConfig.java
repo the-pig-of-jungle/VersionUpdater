@@ -30,7 +30,7 @@ public class CheckConfig {
 
     private UpdateCondition mUpdateCondition = new DefaultUpdateCondition();
 
-    private long mIgnorePeriod = Constants.NO_DEFINE;
+    private long mIgnorePeriod = Constants.NO_SPECIFY;
 
 
     public CheckConfig() {

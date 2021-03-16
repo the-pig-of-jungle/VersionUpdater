@@ -8,7 +8,7 @@ public class IgnorePeriod {
     private int mDays;
     private int mHours;
     private int mMinutes;
-    private long mSeconds;
+    private int mSeconds;
 
 
     private IgnorePeriod() {
@@ -44,13 +44,13 @@ public class IgnorePeriod {
         return this;
     }
 
-    public IgnorePeriod seconds(long seconds) {
+    public IgnorePeriod seconds(int seconds) {
         mSeconds = seconds;
         return this;
     }
 
 
     public long combine() {
-        return (mDays * 24 * 3600) + (mHours * 3600) + (mMinutes * 60) + mSeconds;
+        return (mDays * 24 * 3600L) + (mHours * 3600L) + (mMinutes * 60L) + mSeconds;
     }
 }

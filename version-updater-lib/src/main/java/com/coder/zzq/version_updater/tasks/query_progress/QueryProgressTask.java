@@ -9,6 +9,7 @@ import com.coder.zzq.version_updater.bean.ReadableVersionInfo;
 import com.coder.zzq.version_updater.bean.download_event.DownloadFailed;
 import com.coder.zzq.version_updater.bean.download_event.DownloadInProgress;
 import com.coder.zzq.version_updater.communication.DownloadEventNotifier;
+import com.coder.zzq.version_updater.communication.DownloadVersionInfoCache;
 import com.coder.zzq.version_updater.tasks.TaskScheduler;
 import com.coder.zzq.version_updater.util.UpdateUtil;
 
@@ -55,16 +56,10 @@ public abstract class QueryProgressTask extends TimerTask {
                             break;
                         case STATUS_FAILED:
                             int reason = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_REASON));
-                            switch (reason) {
-                                case DownloadManager.ERROR_DEVICE_NOT_FOUND:
-                                    DownloadEventNotifier.get().notifyEvent(new DownloadFailed(DownloadFailed.FAILED_REASON_SD_CARD_NOT_FOUND));
-                                    break;
-                                case DownloadManager.ERROR_INSUFFICIENT_SPACE:
-                                    DownloadEventNotifier.get().notifyEvent(new DownloadFailed(DownloadFailed.FAILED_REASON_INSUFFICIENT_SPACE));
-                                    break;
-                            }
                             cancelDownloadService();
                             mDownloadManager.remove(mDownloadId);
+                            DownloadVersionInfoCache.clearCachedDownloadInfo();
+                            DownloadEventNotifier.get().notifyEvent(new DownloadFailed(reason));
                             break;
                         case STATUS_SUCCESSFUL:
                             DownloadEventNotifier.get().notifyEvent(
