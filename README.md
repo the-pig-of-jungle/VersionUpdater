@@ -23,9 +23,9 @@ repositories {
 <pre><code>
 
 dependencies {
-      implementation 'com.github.zhiqiang-series.version-updater:updater:1.2.1'
+      implementation 'com.github.zhiqiang-series.version-updater:updater:1.2.2'
 
-      annotationProcessor 'com.github.zhiqiang-series.version-updater:annotation-compiler:1.2.1'
+      annotationProcessor 'com.github.zhiqiang-series.version-updater:annotation-compiler:1.2.2'
 }
 
 </code></pre>
