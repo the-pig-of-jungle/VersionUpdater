@@ -3,13 +3,9 @@ package com.coder.zzq.versionupdater.annotation.compiler;
 import com.squareup.javapoet.ClassName;
 
 public class ClassNames {
-    public static final ClassName BASE_AUTO_DETECT_OBSERVER =
+    public static final ClassName BASE_VERSION_UPDATE_CALLBACK =
             ClassName.get("com.coder.zzq.version_updater.communication",
-                    "AbstractAutoDetectObserver");
-
-    public static final ClassName BASE_MANUAL_DETECT_OBSERVER =
-            ClassName.get("com.coder.zzq.version_updater.communication",
-                    "AbstractManualDetectObserver");
+                    "AbstractVersionUpdateCallback");
 
     public static final ClassName DETECT_OBSERVER_REGISTER = ClassName.get("com.coder.zzq.version_updater",
             "DetectObserverRegister");
@@ -36,7 +32,7 @@ public class ClassNames {
 
     public static final ClassName VERSION_UPDATER_INITIALIZER =
             ClassName.get("com.coder.zzq.version_updater",
-                    "AppUpdaterInitializer");
+                    "VersionUpdaterInitializer");
 
     public static final ClassName TOOLKIT =
             ClassName.get("com.coder.zzq.toolkit", "Toolkit");

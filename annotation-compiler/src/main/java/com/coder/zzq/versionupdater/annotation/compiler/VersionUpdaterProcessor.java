@@ -1,7 +1,6 @@
 package com.coder.zzq.versionupdater.annotation.compiler;
 
-import com.coder.zzq.versionupdater.annotations.AutoCheck;
-import com.coder.zzq.versionupdater.annotations.ManualCheck;
+import com.coder.zzq.versionupdater.annotations.ProcessResponder;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -30,8 +29,7 @@ import javax.tools.Diagnostic;
 @AutoService(Processor.class)
 public class VersionUpdaterProcessor extends AbstractProcessor {
     private final String[] supportedAnnotations = {
-            AutoCheck.class.getCanonicalName(),
-            ManualCheck.class.getCanonicalName(),
+            ProcessResponder.class.getCanonicalName(),
     };
 
     private ProcessingEnvironment mProcessingEnvironment;
@@ -56,13 +54,10 @@ public class VersionUpdaterProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
         TypeSpec.Builder detectObserverRegisterClassBuilder = TypeSpec.classBuilder(ClassNames.DETECT_OBSERVER_REGISTER)
                 .addSuperinterface(ClassNames.DETECT_OBSERVER_REGISTER_INTERFACE);
-        TypeElement autoDetectObserver = null;
-        TypeElement manualDetectObserver = null;
+        TypeElement versionUpdateCallback = null;
         for (TypeElement element : set) {
-            if (element.getQualifiedName().toString().equals(AutoCheck.class.getCanonicalName())) {
-                autoDetectObserver = processAutoCheckAnnotation(roundEnvironment);
-            } else if (element.getQualifiedName().toString().equals(ManualCheck.class.getCanonicalName())) {
-                manualDetectObserver = processManualCheckAnnotation(roundEnvironment);
+            if (element.getQualifiedName().toString().equals(ProcessResponder.class.getCanonicalName())) {
+                versionUpdateCallback = processVersionUpdateCallbackAnnotations(roundEnvironment);
             }
         }
 
@@ -79,17 +74,11 @@ public class VersionUpdaterProcessor extends AbstractProcessor {
                         ClassNames.VIEW_MODEL_PROVIDER,
                         ClassNames.DOWNLOAD_EVENT_VIEW_MODEL
                 );
+        registerMethodBuilder.addStatement("downloadEventLiveData.setDetectMode(checkConfig.getDetectMode())");
         registerMethodBuilder.beginControlFlow("if(!downloadEventLiveData.hasObservers())");
-        if (autoDetectObserver != null) {
+        if (versionUpdateCallback != null) {
             registerMethodBuilder.addStatement("downloadEventLiveData.observe(checkConfig.getObserverPage().getLifecycleOwner(), new $T(checkConfig.getObserverPage().getActivityContext()))",
-                    ClassName.get(autoDetectObserver));
-        }
-
-        if (manualDetectObserver != null) {
-            registerMethodBuilder.beginControlFlow("if(checkConfig.getDetectMode() == CheckConfig.DETECT_MODE_MANUAL)")
-                    .addStatement("downloadEventLiveData.observe(checkConfig.getObserverPage().getLifecycleOwner(), new $T(checkConfig.getObserverPage().getActivityContext()))",
-                            ClassName.get(manualDetectObserver))
-                    .endControlFlow();
+                    ClassName.get(versionUpdateCallback));
         }
 
         registerMethodBuilder.endControlFlow();
@@ -138,40 +127,19 @@ public class VersionUpdaterProcessor extends AbstractProcessor {
 
     }
 
-    private TypeElement processManualCheckAnnotation(RoundEnvironment roundEnvironment) {
-        List<Element> elements = new ArrayList<>(roundEnvironment.getElementsAnnotatedWith(ManualCheck.class));
+    private TypeElement processVersionUpdateCallbackAnnotations(RoundEnvironment roundEnvironment) {
+        List<Element> elements = new ArrayList<>(roundEnvironment.getElementsAnnotatedWith(ProcessResponder.class));
         if (elements.size() > 1) {
-            mProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, "multiple classes annotated with ManualCheck, only one do");
+            mProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, "multiple classes annotated with @UpdateProcessResponder, only one do");
             return null;
         }
 
         TypeElement typeElement = (TypeElement) elements.get(0);
 
-        if (!ClassName.get(typeElement.getSuperclass()).equals(ClassNames.BASE_MANUAL_DETECT_OBSERVER)) {
+        if (!ClassName.get(typeElement.getSuperclass()).equals(ClassNames.BASE_VERSION_UPDATE_CALLBACK)) {
             mProcessingEnvironment.getMessager().printMessage(
                     Diagnostic.Kind.ERROR,
-                    "auto detect observer:" + typeElement.getSimpleName() + " must extends " + ClassNames.BASE_MANUAL_DETECT_OBSERVER.simpleName()
-            );
-            return null;
-        }
-
-
-        return typeElement;
-    }
-
-    private TypeElement processAutoCheckAnnotation(RoundEnvironment roundEnvironment) {
-        List<Element> elements = new ArrayList<>(roundEnvironment.getElementsAnnotatedWith(AutoCheck.class));
-        if (elements.size() > 1) {
-            mProcessingEnvironment.getMessager().printMessage(Diagnostic.Kind.ERROR, "multiple classes annotated with AutoCheck, only one do");
-            return null;
-        }
-
-        TypeElement typeElement = (TypeElement) elements.get(0);
-
-        if (!ClassName.get(typeElement.getSuperclass()).equals(ClassNames.BASE_AUTO_DETECT_OBSERVER)) {
-            mProcessingEnvironment.getMessager().printMessage(
-                    Diagnostic.Kind.ERROR,
-                    "auto detect observer:" + typeElement.getSimpleName() + " must extends " + ClassNames.BASE_AUTO_DETECT_OBSERVER.simpleName()
+                    "version update callback:" + typeElement.getSimpleName() + " must extends " + ClassNames.BASE_VERSION_UPDATE_CALLBACK.simpleName()
             );
             return null;
         }
