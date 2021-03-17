@@ -3,7 +3,7 @@ package com.coder.zzq.version_updater;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.coder.zzq.version_updater.bean.download_event.LocalVersionIsUpToDate;
+import com.coder.zzq.version_updater.bean.update_event.LocalVersionIsUpToDate;
 import com.coder.zzq.version_updater.communication.DetectObserverRegisterProvider;
 import com.coder.zzq.version_updater.communication.DownloadEventNotifier;
 import com.coder.zzq.version_updater.communication.DownloadVersionInfoCache;

@@ -1,10 +1,10 @@
-package com.coder.zzq.version_updater.bean.download_event;
+package com.coder.zzq.version_updater.bean.update_event;
 
 import android.net.Uri;
 
 import com.coder.zzq.version_updater.bean.ApkInstaller;
 
-public class DownloadComplete extends DownloadEvent {
+public class DownloadComplete extends VersionUpdateEvent {
     private final Uri mApkUri;
     private final ApkInstaller mApkInstaller;
 

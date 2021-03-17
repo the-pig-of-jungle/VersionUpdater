@@ -4,11 +4,11 @@ import android.content.Context;
 
 import androidx.lifecycle.Observer;
 
-import com.coder.zzq.version_updater.bean.download_event.DownloadEvent;
+import com.coder.zzq.version_updater.bean.update_event.VersionUpdateEvent;
 
 import java.lang.ref.WeakReference;
 
-public abstract class HoldActivityContextObserver implements Observer<DownloadEvent> {
+public abstract class HoldActivityContextObserver implements Observer<VersionUpdateEvent> {
     private WeakReference<Context> mActivityContext;
 
     public HoldActivityContextObserver(Context activityContext) {

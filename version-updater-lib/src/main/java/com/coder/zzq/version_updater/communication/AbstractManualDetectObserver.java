@@ -2,9 +2,9 @@ package com.coder.zzq.version_updater.communication;
 
 import android.content.Context;
 
-import com.coder.zzq.version_updater.bean.download_event.DownloadEvent;
-import com.coder.zzq.version_updater.bean.download_event.DownloadRequestDuplicate;
-import com.coder.zzq.version_updater.bean.download_event.LocalVersionIsUpToDate;
+import com.coder.zzq.version_updater.bean.update_event.VersionUpdateEvent;
+import com.coder.zzq.version_updater.bean.update_event.DownloadRequestDuplicate;
+import com.coder.zzq.version_updater.bean.update_event.LocalVersionIsUpToDate;
 
 public abstract class AbstractManualDetectObserver extends HoldActivityContextObserver {
 
@@ -13,7 +13,7 @@ public abstract class AbstractManualDetectObserver extends HoldActivityContextOb
     }
 
     @Override
-    public final void onChanged(DownloadEvent downloadEvent) {
+    public final void onChanged(VersionUpdateEvent downloadEvent) {
         if (downloadEvent instanceof LocalVersionIsUpToDate) {
             onLocalVersionIsUpToDate(getActivityContext());
         } else if (downloadEvent instanceof DownloadRequestDuplicate) {

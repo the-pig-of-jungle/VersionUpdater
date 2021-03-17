@@ -6,8 +6,8 @@ import android.net.Uri;
 
 import com.coder.zzq.version_updater.bean.DownloadProgress;
 import com.coder.zzq.version_updater.bean.ReadableVersionInfo;
-import com.coder.zzq.version_updater.bean.download_event.DownloadFailed;
-import com.coder.zzq.version_updater.bean.download_event.DownloadInProgress;
+import com.coder.zzq.version_updater.bean.update_event.DownloadFailed;
+import com.coder.zzq.version_updater.bean.update_event.DownloadInProgress;
 import com.coder.zzq.version_updater.communication.DownloadEventNotifier;
 import com.coder.zzq.version_updater.communication.DownloadVersionInfoCache;
 import com.coder.zzq.version_updater.tasks.TaskScheduler;

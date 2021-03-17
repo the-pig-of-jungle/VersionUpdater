@@ -1,10 +1,10 @@
-package com.coder.zzq.version_updater.bean.download_event;
+package com.coder.zzq.version_updater.bean.update_event;
 
 import android.app.DownloadManager;
 
 import com.coder.zzq.version_updater.Constants;
 
-public class DownloadFailed extends DownloadEvent {
+public class DownloadFailed extends VersionUpdateEvent {
     public DownloadFailed(int failedReason) {
         mFailedReason = failedReason;
     }

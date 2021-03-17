@@ -5,8 +5,8 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.coder.zzq.version_updater.bean.RemoteVersion;
-import com.coder.zzq.version_updater.bean.download_event.DetectNewVersion;
-import com.coder.zzq.version_updater.bean.download_event.NewVersionApkExists;
+import com.coder.zzq.version_updater.bean.update_event.DetectNewVersion;
+import com.coder.zzq.version_updater.bean.update_event.NewVersionApkExists;
 import com.coder.zzq.version_updater.bean.download_trigger.DownloadTrigger;
 import com.coder.zzq.version_updater.communication.DownloadEventNotifier;
 import com.coder.zzq.version_updater.communication.DownloadVersionInfoCache;

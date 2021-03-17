@@ -5,7 +5,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.coder.zzq.version_updater.bean.download_event.DownloadRequestDuplicate;
+import com.coder.zzq.version_updater.bean.update_event.DownloadRequestDuplicate;
 import com.coder.zzq.version_updater.communication.DownloadEventNotifier;
 import com.coder.zzq.version_updater.util.UpdateUtil;
 

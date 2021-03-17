@@ -1,10 +1,10 @@
-package com.coder.zzq.version_updater.bean.download_event;
+package com.coder.zzq.version_updater.bean.update_event;
 
 import com.coder.zzq.version_updater.bean.ApkInstaller;
 import com.coder.zzq.version_updater.bean.DownloadProgress;
 import com.coder.zzq.version_updater.bean.ReadableVersionInfo;
 
-public class DownloadInProgress extends DownloadEvent {
+public class DownloadInProgress extends VersionUpdateEvent {
     private final DownloadProgress mDownloadProgress;
     private final ReadableVersionInfo mNewVersionInfo;
     private final ApkInstaller mApkInstaller;

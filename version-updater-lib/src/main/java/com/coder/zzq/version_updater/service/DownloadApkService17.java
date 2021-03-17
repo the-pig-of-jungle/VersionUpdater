@@ -9,7 +9,7 @@ import android.os.IBinder;
 import androidx.annotation.Nullable;
 
 import com.coder.zzq.version_updater.bean.RemoteVersion;
-import com.coder.zzq.version_updater.bean.download_event.DownloadRequestDuplicate;
+import com.coder.zzq.version_updater.bean.update_event.DownloadRequestDuplicate;
 import com.coder.zzq.version_updater.communication.DownloadEventNotifier;
 import com.coder.zzq.version_updater.communication.DownloadVersionInfoCache;
 import com.coder.zzq.version_updater.tasks.TaskScheduler;
