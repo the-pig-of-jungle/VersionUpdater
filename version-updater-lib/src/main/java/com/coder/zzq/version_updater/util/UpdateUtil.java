@@ -12,9 +12,9 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.version_updater.VersionUpdaterFileProvider;
 import com.coder.zzq.version_updater.bean.ApkInstaller;
-import com.coder.zzq.toolkit.Toolkit;
 
 import java.io.File;
 

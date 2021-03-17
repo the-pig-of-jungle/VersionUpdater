@@ -8,13 +8,13 @@ import android.os.IBinder;
 
 import androidx.annotation.Nullable;
 
+import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.version_updater.bean.RemoteVersion;
 import com.coder.zzq.version_updater.bean.update_event.DownloadRequestDuplicate;
-import com.coder.zzq.version_updater.communication.DownloadEventNotifier;
 import com.coder.zzq.version_updater.communication.DownloadVersionInfoCache;
+import com.coder.zzq.version_updater.communication.UpdateEventNotifier;
 import com.coder.zzq.version_updater.tasks.TaskScheduler;
 import com.coder.zzq.version_updater.util.UpdateUtil;
-import com.coder.zzq.toolkit.Toolkit;
 
 /**
  * Created by 朱志强 on 2018/1/27.
@@ -36,7 +36,7 @@ public class DownloadApkService17 extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (mStartCount != 1) {
-            DownloadEventNotifier.get().notifyEvent(new DownloadRequestDuplicate());
+            UpdateEventNotifier.get().notifyEvent(new DownloadRequestDuplicate());
             return START_NOT_STICKY;
         }
         RemoteVersion remoteVersion = RemoteVersion.fromJson(intent.getExtras().getString("remote_version"));
@@ -49,7 +49,7 @@ public class DownloadApkService17 extends Service {
                     .setTitle(UpdateUtil.getAppName() + ": " + remoteVersion.getVersionName());
             downloadId = UpdateUtil.getDownloadManager().enqueue(request);
         }
-        DownloadVersionInfoCache.storeDownloadVersionInfoIntoCache(remoteVersion.getVersionCode(), downloadId, DownloadEventNotifier.get().isFilteringIntermediateProgress());
+        DownloadVersionInfoCache.storeDownloadVersionInfoIntoCache(remoteVersion.getVersionCode(), downloadId, UpdateEventNotifier.get().isFilteringIntermediateProgress());
         TaskScheduler.queryDownloadProgress17(downloadId, remoteVersion.createReadableOnlyVersionInfo());
         return START_NOT_STICKY;
     }

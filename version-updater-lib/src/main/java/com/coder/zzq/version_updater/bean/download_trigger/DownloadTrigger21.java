@@ -6,7 +6,7 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import com.coder.zzq.version_updater.bean.update_event.DownloadRequestDuplicate;
-import com.coder.zzq.version_updater.communication.DownloadEventNotifier;
+import com.coder.zzq.version_updater.communication.UpdateEventNotifier;
 import com.coder.zzq.version_updater.util.UpdateUtil;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -29,9 +29,9 @@ public class DownloadTrigger21 extends AbstractDownloadTrigger implements Downlo
     }
 
     private void downloadHelper(boolean background) {
-        DownloadEventNotifier.get().filteringIntermediateProgress(background);
+        UpdateEventNotifier.get().filteringIntermediateProgress(background);
         if (UpdateUtil.isJobRunning(mJobInfo.getId())) {
-            DownloadEventNotifier.get().notifyEvent(new DownloadRequestDuplicate());
+            UpdateEventNotifier.get().notifyEvent(new DownloadRequestDuplicate());
             return;
         }
         UpdateUtil.getJobScheduler().schedule(mJobInfo);

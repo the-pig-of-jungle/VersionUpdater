@@ -8,12 +8,12 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.version_updater.bean.RemoteVersion;
-import com.coder.zzq.version_updater.communication.DownloadEventNotifier;
 import com.coder.zzq.version_updater.communication.DownloadVersionInfoCache;
+import com.coder.zzq.version_updater.communication.UpdateEventNotifier;
 import com.coder.zzq.version_updater.tasks.TaskScheduler;
 import com.coder.zzq.version_updater.util.UpdateUtil;
-import com.coder.zzq.toolkit.Toolkit;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class DownloadApkService21 extends JobService {
@@ -34,7 +34,7 @@ public class DownloadApkService21 extends JobService {
                     .setTitle(UpdateUtil.getAppName() + ": " + remoteVersion.getVersionName());
             downloadId = UpdateUtil.getDownloadManager().enqueue(request);
         }
-        DownloadVersionInfoCache.storeDownloadVersionInfoIntoCache(remoteVersion.getVersionCode(), downloadId, DownloadEventNotifier.get().isFilteringIntermediateProgress());
+        DownloadVersionInfoCache.storeDownloadVersionInfoIntoCache(remoteVersion.getVersionCode(), downloadId, UpdateEventNotifier.get().isFilteringIntermediateProgress());
         TaskScheduler.queryDownloadProgress21(params.getJobId(), downloadId, remoteVersion.createReadableOnlyVersionInfo());
         return true;
     }

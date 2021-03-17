@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment;
 
 import com.coder.zzq.version_updater.bean.update_event.LocalVersionIsUpToDate;
 import com.coder.zzq.version_updater.communication.DetectObserverRegisterProvider;
-import com.coder.zzq.version_updater.communication.DownloadEventNotifier;
 import com.coder.zzq.version_updater.communication.DownloadVersionInfoCache;
+import com.coder.zzq.version_updater.communication.UpdateEventNotifier;
 import com.coder.zzq.version_updater.condition.UpdateCondition;
 import com.coder.zzq.version_updater.tasks.TaskScheduler;
 import com.coder.zzq.version_updater.util.UpdateUtil;
@@ -56,7 +56,7 @@ public class VersionUpdater implements IVersionUpdater {
 
         if (!mCheckConfig.getUpdateCondition().needUpdate(mCheckConfig.getRemoteVersion().getVersionCode(), UpdateUtil.getLocalVersionCode())) {
             if (mCheckConfig.getDetectMode() == CheckConfig.DETECT_MODE_MANUAL) {
-                DownloadEventNotifier.get().notifyEvent(new LocalVersionIsUpToDate());
+                UpdateEventNotifier.get().notifyEvent(new LocalVersionIsUpToDate());
             }
             if (DownloadVersionInfoCache.existsCachedDownloadVersion()) {
                 TaskScheduler.cleanApkFile();

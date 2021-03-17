@@ -8,8 +8,8 @@ import com.coder.zzq.version_updater.bean.DownloadProgress;
 import com.coder.zzq.version_updater.bean.ReadableVersionInfo;
 import com.coder.zzq.version_updater.bean.update_event.DownloadFailed;
 import com.coder.zzq.version_updater.bean.update_event.DownloadInProgress;
-import com.coder.zzq.version_updater.communication.DownloadEventNotifier;
 import com.coder.zzq.version_updater.communication.DownloadVersionInfoCache;
+import com.coder.zzq.version_updater.communication.UpdateEventNotifier;
 import com.coder.zzq.version_updater.tasks.TaskScheduler;
 import com.coder.zzq.version_updater.util.UpdateUtil;
 
@@ -50,8 +50,8 @@ public abstract class QueryProgressTask extends TimerTask {
 
                     switch (status) {
                         case STATUS_RUNNING:
-                            if (!DownloadEventNotifier.get().isFilteringIntermediateProgress()) {
-                                DownloadEventNotifier.get().notifyEvent(new DownloadInProgress(new DownloadProgress(sizeSoFar, totalSize, percentage + "%", false), mNewVersionInfo, null));
+                            if (!UpdateEventNotifier.get().isFilteringIntermediateProgress()) {
+                                UpdateEventNotifier.get().notifyEvent(new DownloadInProgress(new DownloadProgress(sizeSoFar, totalSize, percentage + "%", false), mNewVersionInfo, null));
                             }
                             break;
                         case STATUS_FAILED:
@@ -59,10 +59,10 @@ public abstract class QueryProgressTask extends TimerTask {
                             cancelDownloadService();
                             mDownloadManager.remove(mDownloadId);
                             DownloadVersionInfoCache.clearCachedDownloadInfo();
-                            DownloadEventNotifier.get().notifyEvent(new DownloadFailed(reason));
+                            UpdateEventNotifier.get().notifyEvent(new DownloadFailed(reason));
                             break;
                         case STATUS_SUCCESSFUL:
-                            DownloadEventNotifier.get().notifyEvent(
+                            UpdateEventNotifier.get().notifyEvent(
                                     new DownloadInProgress(
                                             new DownloadProgress(sizeSoFar, totalSize, percentage + "%", true),
                                             mNewVersionInfo,

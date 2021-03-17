@@ -12,13 +12,13 @@ public class ClassNames {
     public static final ClassName CHECK_CONFIG = ClassName.get("com.coder.zzq.version_updater",
             "CheckConfig");
 
-    public static final ClassName DOWNLOAD_EVENT_LIVE_DATA =
+    public static final ClassName UPDATE_EVENT_LIVE_DATA =
             ClassName.get("com.coder.zzq.version_updater.communication",
-                    "DownloadEventLiveData");
+                    "UpdateEventLiveData");
 
-    public static final ClassName DOWNLOAD_EVENT_VIEW_MODEL =
+    public static final ClassName UPDATE_EVENT_VIEW_MODEL =
             ClassName.get("com.coder.zzq.version_updater.communication",
-                    "DownloadEventViewModel");
+                    "UpdateEventViewModel");
 
     public static final ClassName VIEW_MODEL_PROVIDER =
             ClassName.get("androidx.lifecycle",

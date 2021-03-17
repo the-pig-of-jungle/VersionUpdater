@@ -1,8 +1,8 @@
 package com.coder.zzq.version_updater.tasks;
 
+import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.version_updater.communication.DownloadVersionInfoCache;
 import com.coder.zzq.version_updater.util.ThreadPool;
-import com.coder.zzq.toolkit.Toolkit;
 
 import java.io.File;
 

@@ -66,18 +66,18 @@ public class VersionUpdaterProcessor extends AbstractProcessor {
                 .addModifiers(Modifier.PUBLIC)
                 .returns(TypeName.VOID)
                 .addParameter(ParameterSpec.builder(ClassNames.CHECK_CONFIG, "checkConfig").build())
-                .addStatement("$T downloadEventLiveData =\n" +
+                .addStatement("$T updateEventLiveData =\n" +
                                 "                new $T(checkConfig.getObserverPage().getViewModelStoreOwner())\n" +
                                 "                        .get($T.class)\n" +
-                                "                        .downloadEvent()",
-                        ClassNames.DOWNLOAD_EVENT_LIVE_DATA,
+                                "                        .updateEvent()",
+                        ClassNames.UPDATE_EVENT_LIVE_DATA,
                         ClassNames.VIEW_MODEL_PROVIDER,
-                        ClassNames.DOWNLOAD_EVENT_VIEW_MODEL
+                        ClassNames.UPDATE_EVENT_VIEW_MODEL
                 );
-        registerMethodBuilder.addStatement("downloadEventLiveData.setDetectMode(checkConfig.getDetectMode())");
-        registerMethodBuilder.beginControlFlow("if(!downloadEventLiveData.hasObservers())");
+        registerMethodBuilder.addStatement("updateEventLiveData.setDetectMode(checkConfig.getDetectMode())");
+        registerMethodBuilder.beginControlFlow("if(!updateEventLiveData.hasObservers())");
         if (versionUpdateCallback != null) {
-            registerMethodBuilder.addStatement("downloadEventLiveData.observe(checkConfig.getObserverPage().getLifecycleOwner(), new $T(checkConfig.getObserverPage().getActivityContext()))",
+            registerMethodBuilder.addStatement("updateEventLiveData.observe(checkConfig.getObserverPage().getLifecycleOwner(), new $T(checkConfig.getObserverPage().getActivityContext()))",
                     ClassName.get(versionUpdateCallback));
         }
 

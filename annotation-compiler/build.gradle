@@ -3,7 +3,7 @@ plugins {
 }
 
 apply plugin: 'com.github.dcendents.android-maven'
-project.archivesBaseName ='annotation-compiler'
+project.archivesBaseName = 'annotation-compiler'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])

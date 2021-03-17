@@ -7,11 +7,11 @@ import android.os.PersistableBundle;
 
 import androidx.annotation.RequiresApi;
 
+import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.version_updater.bean.RemoteVersion;
 import com.coder.zzq.version_updater.bean.download_trigger.DownloadTrigger;
 import com.coder.zzq.version_updater.bean.download_trigger.DownloadTrigger21;
 import com.coder.zzq.version_updater.service.DownloadApkService21;
-import com.coder.zzq.toolkit.Toolkit;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class DownloadApkTask21 extends DownloadApkTask {
@@ -28,6 +28,6 @@ public class DownloadApkTask21 extends DownloadApkTask {
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setExtras(extras)
                 .build();
-        return new DownloadTrigger21(jobInfo, cachedDownloadId,mRemoteVersion.getIgnorePeriod());
+        return new DownloadTrigger21(jobInfo, cachedDownloadId, mRemoteVersion.getIgnorePeriod());
     }
 }

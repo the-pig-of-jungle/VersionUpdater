@@ -46,6 +46,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void nextPage(View view) {
-        startActivity(new Intent(this,MainActivity2.class));
+        startActivity(new Intent(this, MainActivity2.class));
     }
 }

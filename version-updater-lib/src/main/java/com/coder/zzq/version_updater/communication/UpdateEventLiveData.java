@@ -7,7 +7,7 @@ import androidx.lifecycle.Observer;
 import com.coder.zzq.version_updater.CheckConfig;
 import com.coder.zzq.version_updater.bean.update_event.VersionUpdateEvent;
 
-public class DownloadEventLiveData extends MutableLiveData<VersionUpdateEvent> {
+public class UpdateEventLiveData extends MutableLiveData<VersionUpdateEvent> {
     @CheckConfig.DetectMode
     private int mDetectMode;
 

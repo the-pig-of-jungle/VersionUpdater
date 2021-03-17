@@ -9,12 +9,11 @@ import com.coder.zzq.smartshow.dialog.NotificationDialog;
 import com.coder.zzq.smartshow.dialog.SmartDialog;
 import com.coder.zzq.smartshow.toast.SmartToast;
 import com.coder.zzq.toolkit.Utils;
-import com.coder.zzq.version_updater.CheckConfig;
 import com.coder.zzq.version_updater.bean.ApkInstaller;
 import com.coder.zzq.version_updater.bean.DownloadProgress;
 import com.coder.zzq.version_updater.bean.ReadableVersionInfo;
-import com.coder.zzq.version_updater.bean.update_event.DownloadFailed;
 import com.coder.zzq.version_updater.bean.download_trigger.DownloadTrigger;
+import com.coder.zzq.version_updater.bean.update_event.DownloadFailed;
 import com.coder.zzq.version_updater.communication.AbstractVersionUpdateCallback;
 import com.coder.zzq.versionupdater.annotations.ProcessResponder;
 

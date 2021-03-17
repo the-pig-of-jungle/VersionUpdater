@@ -5,15 +5,15 @@ import android.content.Context;
 import com.coder.zzq.version_updater.bean.ApkInstaller;
 import com.coder.zzq.version_updater.bean.DownloadProgress;
 import com.coder.zzq.version_updater.bean.ReadableVersionInfo;
+import com.coder.zzq.version_updater.bean.download_trigger.DownloadTrigger;
 import com.coder.zzq.version_updater.bean.update_event.ClearInActiveObserverData;
 import com.coder.zzq.version_updater.bean.update_event.DetectNewVersion;
-import com.coder.zzq.version_updater.bean.update_event.VersionUpdateEvent;
 import com.coder.zzq.version_updater.bean.update_event.DownloadFailed;
 import com.coder.zzq.version_updater.bean.update_event.DownloadInProgress;
 import com.coder.zzq.version_updater.bean.update_event.DownloadRequestDuplicate;
 import com.coder.zzq.version_updater.bean.update_event.LocalVersionIsUpToDate;
 import com.coder.zzq.version_updater.bean.update_event.NewVersionApkExists;
-import com.coder.zzq.version_updater.bean.download_trigger.DownloadTrigger;
+import com.coder.zzq.version_updater.bean.update_event.VersionUpdateEvent;
 
 public abstract class AbstractVersionUpdateCallback extends HoldActivityContextObserver {
     public AbstractVersionUpdateCallback(Context activityContext) {
@@ -21,25 +21,25 @@ public abstract class AbstractVersionUpdateCallback extends HoldActivityContextO
     }
 
     @Override
-    public final void onChanged(VersionUpdateEvent downloadEvent) {
-        if (downloadEvent instanceof DetectNewVersion) {
-            onDetectNewVersion(getActivityContext(), ((DetectNewVersion) downloadEvent).getNewVersionInfo(), ((DetectNewVersion) downloadEvent).getDownloadTrigger());
-            DownloadEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
-        } else if (downloadEvent instanceof LocalVersionIsUpToDate) {
+    public final void onChanged(VersionUpdateEvent updateEvent) {
+        if (updateEvent instanceof DetectNewVersion) {
+            onDetectNewVersion(getActivityContext(), ((DetectNewVersion) updateEvent).getNewVersionInfo(), ((DetectNewVersion) updateEvent).getDownloadTrigger());
+            UpdateEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
+        } else if (updateEvent instanceof LocalVersionIsUpToDate) {
             onLocalVersionIsUpToDate(getActivityContext());
-            DownloadEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
-        } else if (downloadEvent instanceof DownloadRequestDuplicate) {
+            UpdateEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
+        } else if (updateEvent instanceof DownloadRequestDuplicate) {
             onDownloadRequestDuplicate(getActivityContext());
-            DownloadEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
-        } else if (downloadEvent instanceof DownloadInProgress) {
-            onDownloadProgressChanged(getActivityContext(), ((DownloadInProgress) downloadEvent).getDownloadProgress(), ((DownloadInProgress) downloadEvent).getNewVersionInfo(), ((DownloadInProgress) downloadEvent).getApkInstaller());
-            DownloadEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
-        } else if (downloadEvent instanceof DownloadFailed) {
-            onDownloadFailed(getActivityContext(), (DownloadFailed) downloadEvent);
-            DownloadEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
-        } else if (downloadEvent instanceof NewVersionApkExists) {
-            onNewVersionApkExists(getActivityContext(), ((NewVersionApkExists) downloadEvent).getNewVersionInfo(), ((NewVersionApkExists) downloadEvent).getApkInstaller());
-            DownloadEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
+            UpdateEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
+        } else if (updateEvent instanceof DownloadInProgress) {
+            onDownloadProgressChanged(getActivityContext(), ((DownloadInProgress) updateEvent).getDownloadProgress(), ((DownloadInProgress) updateEvent).getNewVersionInfo(), ((DownloadInProgress) updateEvent).getApkInstaller());
+            UpdateEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
+        } else if (updateEvent instanceof DownloadFailed) {
+            onDownloadFailed(getActivityContext(), (DownloadFailed) updateEvent);
+            UpdateEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
+        } else if (updateEvent instanceof NewVersionApkExists) {
+            onNewVersionApkExists(getActivityContext(), ((NewVersionApkExists) updateEvent).getNewVersionInfo(), ((NewVersionApkExists) updateEvent).getApkInstaller());
+            UpdateEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
         }
     }
 
