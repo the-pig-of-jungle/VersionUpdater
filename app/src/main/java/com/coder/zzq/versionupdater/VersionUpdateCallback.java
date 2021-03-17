@@ -9,17 +9,18 @@ import com.coder.zzq.smartshow.dialog.NotificationDialog;
 import com.coder.zzq.smartshow.dialog.SmartDialog;
 import com.coder.zzq.smartshow.toast.SmartToast;
 import com.coder.zzq.toolkit.Utils;
+import com.coder.zzq.version_updater.CheckConfig;
 import com.coder.zzq.version_updater.bean.ApkInstaller;
 import com.coder.zzq.version_updater.bean.DownloadProgress;
 import com.coder.zzq.version_updater.bean.ReadableVersionInfo;
-import com.coder.zzq.version_updater.bean.download_event.DownloadFailed;
+import com.coder.zzq.version_updater.bean.update_event.DownloadFailed;
 import com.coder.zzq.version_updater.bean.download_trigger.DownloadTrigger;
-import com.coder.zzq.version_updater.communication.AbstractAutoDetectObserver;
-import com.coder.zzq.versionupdater.annotations.AutoCheck;
+import com.coder.zzq.version_updater.communication.AbstractVersionUpdateCallback;
+import com.coder.zzq.versionupdater.annotations.ProcessResponder;
 
-@AutoCheck
-public class AutoDetectObserver extends AbstractAutoDetectObserver {
-    public AutoDetectObserver(Context activityContext) {
+@ProcessResponder
+public class VersionUpdateCallback extends AbstractVersionUpdateCallback {
+    public VersionUpdateCallback(Context activityContext) {
         super(activityContext);
     }
 
@@ -39,6 +40,7 @@ public class AutoDetectObserver extends AbstractAutoDetectObserver {
                                 downloadTrigger.downloadInForeground();
                             } else {
                                 downloadTrigger.downloadInBackground();
+                                SmartToast.showInCenter("开始后台更新");
                             }
                             smartDialog.dismiss();
                         }
@@ -65,6 +67,16 @@ public class AutoDetectObserver extends AbstractAutoDetectObserver {
                         }
                     }
                 }).showInActivity((Activity) context);
+    }
+
+    @Override
+    protected void onLocalVersionIsUpToDate(Context activityContext) {
+        SmartToast.showInCenter("当前已是最新版本");
+    }
+
+    @Override
+    protected void onDownloadRequestDuplicate(Context activityContext) {
+        SmartToast.waiting("已在后台下载...");
     }
 
     @Override

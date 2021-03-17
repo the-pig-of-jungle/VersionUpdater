@@ -2,13 +2,13 @@ package com.coder.zzq.versionupdater;
 
 import android.app.Application;
 
-import com.coder.zzq.version_updater.AppUpdaterInitializer;
+import com.coder.zzq.version_updater.VersionUpdaterInitializer;
 
 
 public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        AppUpdaterInitializer.initialize(this);
+        VersionUpdaterInitializer.initialize(this);
     }
 }
