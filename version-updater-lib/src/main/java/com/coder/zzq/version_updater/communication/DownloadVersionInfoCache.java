@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.version_updater.bean.IgnorePeriod;
-import com.coder.zzq.version_updater.bean.update_event.ClearInActiveObserverData;
 
 import java.util.Date;
 
@@ -98,7 +97,6 @@ public class DownloadVersionInfoCache {
                 .putLong(ITEM_IGNORED_TRIGGERED_MOMENT, new Date().getTime())
                 .putLong(ITEM_IGNORED_PERIOD, ignorePeriod)
                 .apply();
-        DownloadEventNotifier.get().notifyEvent(new ClearInActiveObserverData());
     }
 
     public static void clearIgnoreVersion() {

@@ -1,6 +1,5 @@
 package com.coder.zzq.version_updater.communication;
 
-import com.coder.zzq.version_updater.bean.update_event.ClearInActiveObserverData;
 import com.coder.zzq.version_updater.bean.update_event.VersionUpdateEvent;
 
 import java.util.LinkedList;
@@ -29,13 +28,7 @@ public class DownloadEventNotifier {
 
     public synchronized void notifyEvent(VersionUpdateEvent updateEvent) {
         for (DownloadEventViewModel viewModel : mDownloadEventViewModels) {
-            if (viewModel.downloadEvent().hasActiveObservers()) {
-                if (!(updateEvent instanceof ClearInActiveObserverData)) {
-                    viewModel.downloadEvent().postValue(updateEvent);
-                }
-            } else {
-                viewModel.downloadEvent().postValue(new ClearInActiveObserverData());
-            }
+            viewModel.downloadEvent().postValue(updateEvent);
         }
     }
 
