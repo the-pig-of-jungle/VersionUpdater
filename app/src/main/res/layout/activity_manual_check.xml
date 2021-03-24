@@ -4,10 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.coder.zzq.versionupdater.MainActivity">
+    tools:context=".ManualCheckActivity">
+
     <Button
+        android:id="@+id/manual_check"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="进入设置页面进行模拟手动更新"
-        android:onClick="nextPage" />
+        android:text="手动检测" />
+
+
 </LinearLayout>

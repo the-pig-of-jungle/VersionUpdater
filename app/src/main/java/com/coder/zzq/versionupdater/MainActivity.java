@@ -1,51 +1,44 @@
 package com.coder.zzq.versionupdater;
 
-import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.coder.zzq.toolkit.Toolkit;
 import com.coder.zzq.version_updater.VersionUpdater;
 import com.coder.zzq.version_updater.bean.IgnorePeriod;
+import com.coder.zzq.version_updater.bean.RemoteVersion;
 
 
 public class MainActivity extends AppCompatActivity {
-
-    private String[] mPermission;
-    public static long mId;
-
-    private EditText mEditText;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mPermission = new String[]{
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-        };
-    }
-
-
-    public void onAutoDetect(View view) {
-        Toolkit.setEnablePrintLog(true);
+        RemoteVersion remoteVersion = mockNetData();
         VersionUpdater.builder()
-                .remoteVersionCode(6)
-                .remoteVersionName("3.7.1")
-                .remoteVersionDesc("我愛你")
-                .remoteApkUrl("https://bxvip.oss-cn-zhangjiakou.aliyuncs.com/bxvip/androidapk/xunyingzy.apk")
-                .forceUpdate(false)
-                .ignorePeriod(IgnorePeriod.create().days(1).combine())
+                .remoteVersionCode(remoteVersion.getVersionCode())
+                .remoteVersionName(remoteVersion.getVersionName())
+                .remoteVersionDesc(remoteVersion.getVersionDesc())
+                .remoteApkUrl(remoteVersion.getApkUrl())
+                .forceUpdate(remoteVersion.isForceUpdate())
+                .ignorePeriod(IgnorePeriod.always())
                 .observer(this)
                 .build()
                 .autoCheck();
     }
 
+    private RemoteVersion mockNetData() {
+        return new RemoteVersion()
+                .setVersionCode(10)
+                .setVersionName("3.1.0")
+                .setVersionDesc("1.修复已知问题")
+                .setForceUpdate(false)
+                .setApkUrl("https://s3.cn-north-1.amazonaws.com.cn/uat.backend.app.jaguarlandrover.cn/app/Landrover_uat_3_9_1_release_0207.apk");
+    }
+
     public void nextPage(View view) {
-        startActivity(new Intent(this, MainActivity2.class));
+        startActivity(new Intent(this, ManualCheckActivity.class));
     }
 }

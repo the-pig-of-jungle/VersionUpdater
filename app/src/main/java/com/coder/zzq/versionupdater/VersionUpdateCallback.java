@@ -32,6 +32,7 @@ public class VersionUpdateCallback extends AbstractVersionUpdateCallback {
             mEnsureDialog.title("发现新版本:" + readableVersionInfo.getVersionName())
                     .message(Utils.isEmpty(readableVersionInfo.getVersionDesc()) ? "1.修复已知问题" : readableVersionInfo.getVersionDesc())
                     .cancelableOnTouchOutside(false)
+                    .cancelable(false)
                     .confirmBtn("立即更新", new DialogBtnClickListener() {
                         @Override
                         public void onBtnClick(SmartDialog smartDialog, int i, Object o) {
@@ -54,7 +55,8 @@ public class VersionUpdateCallback extends AbstractVersionUpdateCallback {
             return;
         }
         mNotificationDialog.title("发现新版本:" + readableVersionInfo.getVersionName())
-                .cancelable(!readableVersionInfo.isForceUpdate())
+                .cancelable(false)
+                .cancelableOnTouchOutside(false)
                 .message(Utils.isEmpty(readableVersionInfo.getVersionDesc()) ? "1.修复已知问题" : readableVersionInfo.getVersionDesc())
                 .confirmBtn("立即更新", new DialogBtnClickListener() {
                     @Override
@@ -86,6 +88,7 @@ public class VersionUpdateCallback extends AbstractVersionUpdateCallback {
         mNotificationDialog.title(downloadProgress.isComplete() ? "下载完成" : "正在下载")
                 .cancelable(!readableVersionInfo.isForceUpdate())
                 .cancelableOnTouchOutside(false)
+
                 .message("当前进度：" + downloadProgress.getPercentage())
                 .confirmBtn(downloadProgress.isComplete() ? "立即安装" : "请等待...", downloadProgress.isComplete() ? new DialogBtnClickListener() {
                     @Override
